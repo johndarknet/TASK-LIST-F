@@ -1,87 +1,192 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Life Productivity — To-Do App (single-file final)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root{ --bg:#0f1724; --card:#0b1320; --accent:#6ee7b7; --muted:#94a3b8; --glass: rgba(255,255,255,0.04); }
-    [data-theme="light"]{ --bg:#f5f7fb; --card:#ffffff; --accent:#0ea5a3; --muted:#6b7280; --glass: rgba(0,0,0,0.04); }
-    *{box-sizing:border-box;font-family:Inter,system-ui,Arial;}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg), #071126);color:var(--muted);display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-    .app{max-width:1100px;width:calc(100% - 40px);margin:0;padding:20px}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    .brand{display:flex;gap:12px;align-items:center}
-    .logo{width:48px;height:48px;background:linear-gradient(135deg,var(--accent),#60a5fa);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#042}
-    .title{font-size:18px;color:var(--accent);font-weight:700}
-    .subtitle{font-size:12px;color:var(--muted)}
-    .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 6px 18px rgba(2,6,23,0.6);color:var(--muted)}
-    .row{display:flex;gap:12px;align-items:center}
-    .login-wrap{max-width:420px;margin:40px auto}
-    .form-row{display:flex;flex-direction:column;margin-bottom:10px}
-    label{font-size:13px;color:var(--muted);margin-bottom:6px}
-    input[type=text], input[type=password], input[type=datetime-local]{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
-    .btn{padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),#60a5fa);color:#042;font-weight:700;cursor:pointer}
-    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
-    .layout{display:grid;grid-template-columns:260px 1fr;gap:16px}
-    nav{min-height:520px}
-    .nav-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;cursor:pointer}
-    .nav-item:hover{background:var(--glass)}
-    .section-title{font-weight:700;color:var(--accent);margin-bottom:8px}
-    .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-    .tile{padding:16px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);cursor:pointer}
-    .tile h3{margin:0;color:#fff}
-    .tile p{margin:6px 0 0 0;color:var(--muted);font-size:13px}
-    .header-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .controls{display:flex;gap:8px;align-items:center}
-    .search{padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-    .task-list{margin-top:12px;display:flex;flex-direction:column;gap:10px}
-    .task{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), transparent)}
-    .task .left{display:flex;align-items:center;gap:12px}
-    .checkbox{width:18px;height:18px;border-radius:5px;border:2px solid rgba(255,255,255,0.08);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
-    .checkbox.checked{background:linear-gradient(90deg,var(--accent),#60a5fa);border:none}
-    .task-title{font-weight:600;color:#fff}
-    .task-meta{font-size:12px;color:var(--muted)}
-    .task-actions{display:flex;gap:8px;align-items:center}
-    .small-btn{padding:6px 8px;border-radius:8px;border:none;background:transparent;color:var(--muted);cursor:pointer}
-    .progress-wrap{margin-top:10px}
-    .progress{height:12px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden}
-    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);width:0%;transition:width .5s ease}
-    .modal{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center;padding:20px}
-    .modal.open{display:flex}
-    .modal .modal-card{width:100%;max-width:540px}
-    .muted{color:var(--muted);font-size:13px}
-    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
-    @media (max-width:900px){.layout{grid-template-columns:1fr}.tiles{grid-template-columns:1fr}}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Life Productivity — To-Do App (themes + particles)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Base color variables (overridden per theme) */
+  :root{
+    --bg: #0f1724;
+    --card: #0b1320;
+    --accent: #6ee7b7;
+    --muted: #94a3b8;
+    --glass: rgba(255,255,255,0.04);
+  }
+
+  /* Light theme */
+  [data-theme="light"]{
+    --bg:#f5f7fb; --card:#ffffff; --accent:#0ea5a3; --muted:#6b7280; --glass: rgba(0,0,0,0.04);
+  }
+
+  /* Halloween theme: moody purple + orange */
+  [data-theme="halloween"]{
+    --bg: linear-gradient(180deg,#0b0712 0%, #1b0f25 50%, #2b152f 100%);
+    --card: rgba(20,8,24,0.95);
+    --accent: #ff8a00;
+    --muted: #d9c4a8;
+    --glass: rgba(255,140,0,0.06);
+  }
+
+  /* Christmas theme */
+  [data-theme="christmas"]{
+    --bg: linear-gradient(180deg,#031b10 0%, #08281a 50%, #0e3a22 100%);
+    --card: rgba(7,20,11,0.95);
+    --accent: #e11d48;
+    --muted: #cbe7d4;
+    --glass: rgba(255,255,255,0.03);
+  }
+
+  *{box-sizing:border-box;font-family:Inter,system-ui,Arial,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Helvetica;}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  .app{max-width:1100px;width:calc(100% - 40px);padding:20px;margin:0;position:relative;z-index:2}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#042;
+         background:linear-gradient(135deg,var(--accent),#60a5fa);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+  .title{font-size:18px;color:var(--accent);font-weight:700}
+  .subtitle{font-size:12px;color:var(--muted)}
+  .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 6px 18px rgba(2,6,23,0.6);color:var(--muted);backdrop-filter: blur(6px);}
+  .row{display:flex;gap:12px;align-items:center}
+  /* Login */
+  .login-wrap{max-width:420px;width:100%;margin:20px auto}
+  .form-row{display:flex;flex-direction:column;margin-bottom:10px}
+  label{font-size:13px;color:var(--muted);margin-bottom:6px}
+  input[type=text],input[type=password],input[type=datetime-local]{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+  .btn{padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),#60a5fa);color:#042;font-weight:700;cursor:pointer}
+  .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+  .login-actions{display:flex;gap:10px;margin-top:8px}
+  .login-extra{margin-top:10px;color:var(--muted);font-size:13px}
+  .show-pass input[type=checkbox]{margin-right:8px;transform:translateY(2px)}
+  .pw-row{display:flex;gap:8px;align-items:center}
+  .pw-row input{flex:1}
+  .icon-btn{background:transparent;border:1px solid rgba(255,255,255,0.04);border-radius:8px;padding:8px;cursor:pointer;font-size:16px;color:var(--muted)}
+  .icon-btn:active{transform:translateY(1px)}
+  /* theme selector */
+  .theme-select{display:flex;gap:8px;align-items:center}
+  select#themeSelect{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+
+  /* Layout */
+  .layout{display:grid;grid-template-columns:260px 1fr;gap:16px}
+  nav{min-height:520px}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;cursor:pointer}
+  .nav-item:hover{background:var(--glass)}
+  .section-title{font-weight:700;color:var(--accent);margin-bottom:8px}
+  .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .tile{padding:16px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);cursor:pointer}
+  .tile h3{margin:0;color:#fff}
+  .tile p{margin:6px 0 0 0;color:var(--muted);font-size:13px}
+  .header-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .controls{display:flex;gap:8px;align-items:center}
+  .search{padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+  .task-list{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+  .task{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), transparent)}
+  .task .left{display:flex;align-items:center;gap:12px}
+  .checkbox{width:18px;height:18px;border-radius:5px;border:2px solid rgba(255,255,255,0.08);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+  .checkbox.checked{background:linear-gradient(90deg,var(--accent),#60a5fa);border:none}
+  .task-title{font-weight:600;color:#fff}
+  .task-meta{font-size:12px;color:var(--muted)}
+  .task-actions{display:flex;gap:8px;align-items:center}
+  .small-btn{padding:6px 8px;border-radius:8px;border:none;background:transparent;color:var(--muted);cursor:pointer}
+  .progress-wrap{margin-top:10px}
+  .progress{height:12px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);width:0%;transition:width .5s ease}
+  .modal{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center;padding:20px}
+  .modal.open{display:flex}
+  .modal .modal-card{width:100%;max-width:540px}
+  .muted{color:var(--muted);font-size:13px}
+  footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}.tiles{grid-template-columns:1fr}}
+  @media(max-width:520px){
+    .login-actions{flex-direction:column}
+    .login-actions .btn{width:100%}
+    .pw-row{flex-direction:row}
+    header{flex-direction:column;align-items:flex-start;gap:12px}
+    .theme-select{width:100%}
+    select#themeSelect{width:100%}
+  }
+
+  /* PARTICLES container: sits behind app content (z-index less than app) */
+  #themeParticles{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+  .particle{position:absolute;will-change:transform,opacity;pointer-events:none;opacity:0.9}
+  /* snow fall */
+  @keyframes fall {
+    0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity:0; }
+    10% { opacity:0.9; }
+    100% { transform: translateY(110vh) translateX(var(--xShift,0px)) rotate(360deg); opacity:0.9; }
+  }
+  /* pumpkins fall with slight rotation */
+  @keyframes pumpkinFall {
+    0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity:0; }
+    10% { opacity:1; }
+    100% { transform: translateY(110vh) translateX(var(--xShift,0px)) rotate(720deg); opacity:0.95; }
+  }
+  /* bats float across */
+  @keyframes batFloat {
+    0% { transform: translateY(5vh) translateX(-10vw) rotate(-10deg); opacity:0; }
+    10% { opacity:1; }
+    50% { transform: translateY(20vh) translateX(60vw) rotate(10deg); }
+    100% { transform: translateY(35vh) translateX(110vw) rotate(0deg); opacity:0; }
+  }
+
+  /* style variations */
+  .snow{font-size:var(--size,16px);color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.6);animation:fall var(--dur,10s) linear var(--delay,0s) infinite}
+  .pumpkin{font-size:var(--size,24px);filter:drop-shadow(0 6px 10px rgba(0,0,0,0.6));animation:pumpkinFall var(--dur,12s) linear var(--delay,0s) infinite}
+  .bat{font-size:var(--size,26px);color:rgba(10,10,10,0.95);text-shadow:0 6px 14px rgba(0,0,0,0.6);animation:batFloat var(--dur,8s) linear var(--delay,0s) infinite}
+</style>
 </head>
 <body data-theme="dark">
-  <div class="app">
+  <div id="themeParticles" aria-hidden="true"></div>
+  <div class="app" role="application">
     <header>
-      <div class="brand">
+      <div class="brand" style="align-items:center">
         <div class="logo">LP</div>
         <div>
           <div class="title">Life Productivity</div>
           <div class="subtitle">Organize. Prioritize. Finish.</div>
         </div>
       </div>
-      <div class="row">
+
+      <div class="row" style="align-items:center">
         <div id="userArea" style="text-align:right"></div>
-        <button id="themeToggle" class="btn ghost">Toggle theme</button>
+        <div class="theme-select">
+          <label for="themeSelect" style="font-size:13px;color:var(--muted);margin-right:6px">Theme</label>
+          <select id="themeSelect" aria-label="Choose theme">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+            <option value="halloween">Halloween</option>
+            <option value="christmas">Christmas</option>
+          </select>
+        </div>
       </div>
     </header>
 
     <!-- LOGIN -->
     <div id="loginScreen" class="card login-wrap">
       <h2 style="margin-top:0;color:var(--accent)">Welcome — Sign In</h2>
-      <div class="form-row"><label>Username</label><input id="loginUser" type="text" placeholder="username"></div>
-      <div class="form-row"><label>Password</label><input id="loginPass" type="password" placeholder="password"></div>
-      <div style="display:flex;gap:8px">
+
+      <div class="form-row">
+        <label>Username</label>
+        <input id="loginUser" type="text" placeholder="username" autocomplete="username">
+      </div>
+
+      <div class="form-row">
+        <label>Password</label>
+        <div class="pw-row">
+          <input id="loginPass" type="password" placeholder="password" autocomplete="current-password">
+          <button id="togglePwdBtn" class="icon-btn" aria-label="Show password">👁️</button>
+        </div>
+      </div>
+
+      <div class="login-actions">
         <button id="signInBtn" class="btn">Sign in</button>
         <button id="createBtn" class="btn ghost">Create account</button>
       </div>
-      <p class="muted" style="margin-top:10px">This demo stores users & tasks locally in your browser (localStorage). Use different usernames to simulate multiple accounts.</p>
+
+      <div class="login-extra">
+        <label class="show-pass"><input id="showPass" type="checkbox"> Show password</label>
+      </div>
     </div>
 
     <!-- APP -->
@@ -165,8 +270,8 @@
 
   </div>
 
-  <!-- Modal: Add/Edit Task -->
-  <div id="modal" class="modal">
+  <!-- Modal -->
+  <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-card card" style="padding:18px">
       <h3 id="modalTitle" style="margin-top:0;color:var(--accent)">New Task</h3>
       <div class="form-row"><label>Title</label><input id="taskTitle"></div>
@@ -179,198 +284,303 @@
     </div>
   </div>
 
-  <script>
-  /* single-file final script with theme persistence + robust storage handling */
-  const defaultSections = ['Personal','Home','School','Work'];
-  const STORAGE_KEY = 'lp_users_v1';
-  const qs = (s, el=document) => el.querySelector(s);
-  const qsa = (s, el=document) => Array.from(el.querySelectorAll(s));
-  const uid = ()=>Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+<script>
+/* Single-file final script with theme selector including halloween & christmas decorations */
+const defaultSections = ['Personal','Home','School','Work'];
+const STORAGE_KEY = 'lp_users_v1';
+const GLOBAL_THEME_KEY = 'lp_global_theme_v1';
+const qs = (s, el=document) => el.querySelector(s);
+const qsa = (s, el=document) => Array.from(el.querySelectorAll(s));
+const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
-  let state = { users: {}, currentUser: null, currentSection: null, editingTaskId: null };
+let state = { users: {}, currentUser: null, currentSection: null, editingTaskId: null };
 
-  function load(){
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw){ state = { users:{}, currentUser:null, currentSection:null, editingTaskId:null }; return; }
-      state = JSON.parse(raw);
-      if(typeof state !== 'object' || !state.users) state = { users:{}, currentUser:null, currentSection:null, editingTaskId:null };
-    } catch(e){
-      console.error('Bad JSON in localStorage — clearing key', e);
-      try{ localStorage.removeItem(STORAGE_KEY); }catch(err){}
-      state = { users:{}, currentUser:null, currentSection:null, editingTaskId:null };
+/* storage helpers */
+function load(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw){ state = { users:{}, currentUser:null, currentSection:null, editingTaskId:null }; return; }
+    state = JSON.parse(raw);
+    if(typeof state !== 'object' || !state.users) state = { users:{}, currentUser:null, currentSection:null, editingTaskId:null };
+  } catch(e){
+    console.error('Bad localStorage JSON — clearing', e);
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(err){}
+    state = { users:{}, currentUser:null, currentSection:null, editingTaskId:null };
+  }
+}
+function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.error('save failed', e); } }
+function ensureUserData(username){
+  if(!username) return;
+  if(!state.users[username]){ state.users[username] = { password:'', sections:{} }; defaultSections.forEach(s=> state.users[username].sections[s]={tasks:[]}); }
+  else defaultSections.forEach(s=>{ if(!state.users[username].sections[s]) state.users[username].sections[s] = {tasks:[]}; });
+}
+
+/* THEME + PARTICLES */
+const particleContainer = document.getElementById('themeParticles');
+
+function applyTheme(t){
+  if(!t) t='dark';
+  document.body.setAttribute('data-theme', t);
+  const sel = qs('#themeSelect'); if(sel && sel.value !== t) sel.value = t;
+  createParticlesForTheme(t);
+}
+function restoreUserTheme(){
+  try {
+    load();
+    const u = state.currentUser;
+    if(u && state.users[u] && state.users[u].theme) {
+      applyTheme(state.users[u].theme);
+    } else {
+      applyTheme(localStorage.getItem(GLOBAL_THEME_KEY) || 'dark');
     }
+  } catch(e){ applyTheme('dark'); }
+}
+function saveGlobalTheme(t){ try { localStorage.setItem(GLOBAL_THEME_KEY, t); } catch(e){ } }
+
+/* create particle elements depending on theme */
+function createParticlesForTheme(theme){
+  // clear previous
+  if(!particleContainer) return;
+  particleContainer.innerHTML = '';
+  if(theme === 'christmas') createSnow(36);
+  else if(theme === 'halloween') createHalloweenMix(18);
+  // else nothing for dark/light
+}
+
+function rand(min, max){ return Math.random()*(max-min)+min; }
+
+function createSnow(count){
+  for(let i=0;i<count;i++){
+    const sp = document.createElement('div');
+    sp.className = 'particle snow';
+    sp.textContent = '❄';
+    const left = rand(0,100);
+    const size = Math.round(rand(12,32));
+    const dur = rand(6,16).toFixed(2) + 's';
+    const delay = rand(0,8).toFixed(2) + 's';
+    const xShift = Math.round(rand(-80,80)) + 'px';
+    sp.style.left = left + 'vw';
+    sp.style.setProperty('--size', size + 'px');
+    sp.style.setProperty('--dur', dur);
+    sp.style.setProperty('--delay', delay);
+    sp.style.setProperty('--xShift', xShift);
+    sp.style.opacity = (rand(0.5,0.95)).toFixed(2);
+    // slight variation in font-smoothing via transform
+    particleContainer.appendChild(sp);
   }
-  function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.error('save failed', e); } }
+}
 
-  function ensureUserData(username){
-    if(!username) return;
-    if(!state.users[username]){ state.users[username] = { password:'', sections:{} }; defaultSections.forEach(s=> state.users[username].sections[s] = { tasks: [] }); }
-    else defaultSections.forEach(s=>{ if(!state.users[username].sections[s]) state.users[username].sections[s] = { tasks: [] } });
+function createHalloweenMix(count){
+  // mix pumpkins and bats
+  for(let i=0;i<count;i++){
+    const isBat = Math.random() < 0.35; // some bats
+    const sp = document.createElement('div');
+    sp.className = 'particle ' + (isBat ? 'bat' : 'pumpkin');
+    sp.textContent = isBat ? '🦇' : '🎃';
+    const top = rand(-20,5);
+    const left = rand(-10,90);
+    const size = Math.round(rand(18,42));
+    const dur = (isBat ? rand(6,14) : rand(8,18)).toFixed(2) + 's';
+    const delay = rand(0,6).toFixed(2) + 's';
+    const xShift = Math.round(rand(-120,120)) + 'px';
+    sp.style.left = left + 'vw';
+    sp.style.top = top + 'vh';
+    sp.style.setProperty('--size', size + 'px');
+    sp.style.setProperty('--dur', dur);
+    sp.style.setProperty('--delay', delay);
+    sp.style.setProperty('--xShift', xShift);
+    sp.style.opacity = (rand(0.6,0.98)).toFixed(2);
+    particleContainer.appendChild(sp);
   }
+}
 
-  // theme helpers
-  function applyTheme(t){ if(!t) t='dark'; document.body.setAttribute('data-theme', t); }
-  function restoreUserTheme(){
-    try {
-      const u = state.currentUser;
-      if(u && state.users[u] && state.users[u].theme) applyTheme(state.users[u].theme);
-      else applyTheme('dark');
-    } catch(e){ applyTheme('dark'); }
-  }
-
-  // authentication handlers
-  function handleCreate(){
-    const u = qs('#loginUser')?.value?.trim();
-    const p = qs('#loginPass')?.value || '';
-    if(!u || !p){ alert('Enter username and password'); return; }
-    load(); ensureUserData(u); state.users[u].password = p; state.currentUser = u; state.currentSection = 'Personal';
-    // set default theme to dark for new user
-    state.users[u].theme = state.users[u].theme || 'dark';
-    save(); showApp();
-  }
-  function handleSignIn(){
-    const u = qs('#loginUser')?.value?.trim(); const p = qs('#loginPass')?.value || '';
-    load();
-    if(!u || !state.users[u] || state.users[u].password !== p){ alert('Invalid user or password (create account if new)'); return; }
-    state.currentUser = u; state.currentSection = state.currentSection || 'Personal'; save(); showApp();
-  }
-
-  // UI binding that runs as soon as DOM ready
-  document.addEventListener('DOMContentLoaded', ()=>{
-    const createBtn = qs('#createBtn'), signInBtn = qs('#signInBtn'), themeBtn = qs('#themeToggle'), signOutBtn = qs('#signOutBtn');
-    if(createBtn) createBtn.addEventListener('click', handleCreate);
-    if(signInBtn) signInBtn.addEventListener('click', handleSignIn);
-    if(themeBtn) themeBtn.addEventListener('click', ()=> {
-      const cur = document.body.getAttribute('data-theme') || 'dark';
-      const next = cur === 'light' ? 'dark' : 'light';
-      applyTheme(next);
-      try { if(state.currentUser && state.users[state.currentUser]){ state.users[state.currentUser].theme = next; save(); } } catch(e){ console.warn('Could not save theme', e); }
-    });
-    if(signOutBtn) signOutBtn.addEventListener('click', ()=> { load(); state.currentUser=null; save(); location.reload(); });
-
-    initApp();
-  });
-
-  function initApp(){
-    load();
-    // ensure any existing users have the proper sections object
-    Object.keys(state.users || {}).forEach(u=>{ defaultSections.forEach(s=>{ if(!state.users[u].sections[s]) state.users[u].sections[s] = { tasks: [] }; }); });
-    if(state.currentUser && state.users[state.currentUser]) showApp();
-  }
-
-  function showApp(){
-    qs('#loginScreen').style.display='none'; qs('#appRoot').style.display='block';
-    restoreUserTheme();
-    renderAccount(); renderSections(); renderHomeTiles(); renderSectionView(); startTicker();
-  }
-
-  function renderAccount(){ if(!state.currentUser) return; qs('#accountName').textContent = state.currentUser; qs('#userArea').innerHTML = `<div class=muted>${state.currentUser}</div>`; }
-
-  function renderSections(){
-    const container = qs('#sectionList'); if(!container) return; container.innerHTML='';
-    defaultSections.forEach(s=>{
-      const el = document.createElement('div'); el.className='nav-item'; el.dataset.section=s; el.innerHTML=`<div style="font-weight:700;color:var(--accent)">${s}</div>`;
-      el.addEventListener('click', ()=>{ state.currentSection=s; save(); renderSectionView(); });
-      container.appendChild(el);
-    });
-  }
-
-  function renderHomeTiles(){ qsa('.tile').forEach(t=> t.addEventListener('click', ()=>{ state.currentSection = t.dataset.section; save(); renderSectionView(); })); }
-
-  function renderSectionView(){
-    if(!state.currentUser) return;
-    qs('#homeTiles').style.display = 'none'; qs('#sectionView').style.display='block';
-    qs('#currentSectionTitle').textContent = state.currentSection;
-    renderTaskList(); renderHistoryList(); updateProgress(); updateNextTask();
-  }
-
-  function getTasks(){ const u = state.currentUser; return (state.users[u] && state.users[u].sections[state.currentSection] && state.users[u].sections[state.currentSection].tasks) || []; }
-
-  function renderTaskList(filterText=''){
-    const list = qs('#taskList'); if(!list) return; list.innerHTML='';
-    const tasks = getTasks().filter(t=>!t.archived && (!filterText || t.title.toLowerCase().includes(filterText.toLowerCase()))).sort((a,b)=> (a.due||0) - (b.due||0));
-    if(tasks.length===0) { list.innerHTML = '<div class="muted">No tasks. Click + New Task to add one.</div>'; return; }
-    tasks.forEach(t=>{
-      const el = document.createElement('div'); el.className='task';
-      const left = document.createElement('div'); left.className='left';
-      const cb = document.createElement('div'); cb.className = 'checkbox' + (t.completed? ' checked':''); cb.innerHTML = t.completed? '✔':'';
-      cb.addEventListener('click', ()=>{ t.completed = !t.completed; if(t.completed) t.completedAt = Date.now(); else t.completedAt = null; save(); renderTaskList(qs('#searchInput')?.value || ''); updateProgress(); updateNextTask(); });
-      const info = document.createElement('div'); info.innerHTML = `<div class="task-title">${escapeHtml(t.title)}</div><div class="task-meta">Due: ${t.due? new Date(t.due).toLocaleString():'—'} ${t.notes? ' • '+escapeHtml(t.notes):''}</div>`;
-      left.appendChild(cb); left.appendChild(info);
-      const actions = document.createElement('div'); actions.className='task-actions';
-      const edit = document.createElement('button'); edit.className='small-btn'; edit.textContent='Edit'; edit.addEventListener('click', ()=>openModal(t.id));
-      const del = document.createElement('button'); del.className='small-btn'; del.textContent='Delete'; del.addEventListener('click', ()=>{ if(confirm('Delete this task?')){ t.archived=true; save(); renderTaskList(qs('#searchInput')?.value || ''); updateProgress(); renderHistoryList(); updateNextTask(); } });
-      actions.appendChild(edit); actions.appendChild(del);
-      el.appendChild(left); el.appendChild(actions);
-      list.appendChild(el);
-    });
-  }
-
-  function renderHistoryList(){
-    const hist = qs('#historyList'); if(!hist) return; hist.innerHTML='';
-    const tasksAll = (state.users[state.currentUser].sections[state.currentSection].tasks || []);
-    const histTasks = tasksAll.filter(t => (t.archived === true) || (t.completed === true) || (t.done === true));
-    if(histTasks.length === 0){ hist.innerHTML = '<div class="muted">No past tasks</div>'; return; }
-    histTasks.sort((a,b)=>{ const ta = a.completedAt || a.createdAt || 0; const tb = b.completedAt || b.createdAt || 0; return tb - ta; }).slice(0,12).forEach(t=>{
-      const d = document.createElement('div'); d.style.padding='8px 0';
-      const when = (t.completedAt || t.createdAt) ? (t.completedAt ? `Completed: ${new Date(t.completedAt).toLocaleString()}` : `Created: ${new Date(t.createdAt).toLocaleString()}`) : '';
-      d.innerHTML = `<div style="font-weight:700;color:#fff">${escapeHtml(t.title)}</div><div class="muted" style="font-size:12px">${when}</div>`;
-      hist.appendChild(d);
-    });
-  }
-
-  function updateProgress(){
-    try{
-      const tasks = (state.users[state.currentUser].sections[state.currentSection].tasks || []).filter(t=>!t.archived);
-      const total = tasks.length; const done = tasks.filter(t=>t.completed).length;
-      const percent = total? Math.round((done/total)*100):0;
-      if(qs('#progressBar')) qs('#progressBar').style.width = percent + '%';
-      if(qs('#progressText')) qs('#progressText').textContent = `${done} of ${total} tasks completed (${percent}%)`;
-    } catch(e){ console.error('updateProgress error', e); }
-  }
-
-  let ticker = null;
-  function getNextTask(){
-    try{ const tasks = (state.users[state.currentUser].sections[state.currentSection].tasks || []).filter(t=>!t.completed && !t.archived && t.due).sort((a,b)=> a.due - b.due); return tasks[0] || null; }catch(e){return null;}
-  }
-  function updateNextTask(){ const nt = getNextTask(); if(!nt){ if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = 'Next task: —'; return; } if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = `Next: ${nt.title} — due ${new Date(nt.due).toLocaleString()}`; }
-  function startTicker(){ if(ticker) clearInterval(ticker); ticker = setInterval(()=>{ const nt = getNextTask(); if(!nt){ if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = 'Next task: —'; return; } const rem = nt.due - Date.now(); if(rem<=0){ if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = `Next: ${nt.title} — due now!`; return; } const h = Math.floor(rem/3600000); const m = Math.floor((rem%3600000)/60000); const s = Math.floor((rem%60000)/1000); if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = `Next: ${nt.title} — ${h}h ${m}m ${s}s left (due ${new Date(nt.due).toLocaleString()})`; },1000); }
-
-  const modal = qs('#modal');
-  function openModal(taskId){
-    state.editingTaskId = taskId || null;
-    if(taskId){
-      const t = state.users[state.currentUser].sections[state.currentSection].tasks.find(x=>x.id===taskId);
-      if(t){ qs('#modalTitle').textContent = 'Edit Task'; qs('#taskTitle').value = t.title; qs('#taskNotes').value = t.notes || ''; qs('#taskDue').value = t.due? toDatetimeLocal(new Date(t.due)) : ''; }
-    } else { qs('#modalTitle').textContent = 'New Task'; if(qs('#taskTitle')) qs('#taskTitle').value=''; if(qs('#taskNotes')) qs('#taskNotes').value=''; if(qs('#taskDue')) qs('#taskDue').value=''; }
-    if(modal) modal.classList.add('open');
-  }
-  function closeModal(){ if(modal) modal.classList.remove('open'); state.editingTaskId = null; }
-
-  document.addEventListener('DOMContentLoaded', ()=>{
-    if(qs('#addTaskBtn')) qs('#addTaskBtn').addEventListener('click', ()=> openModal());
-    if(qs('#cancelBtn')) qs('#cancelBtn').addEventListener('click', ()=> closeModal());
-    if(qs('#saveTaskBtn')) qs('#saveTaskBtn').addEventListener('click', ()=>{
-      const title = qs('#taskTitle').value.trim(); if(!title){ alert('Enter title'); return; }
-      const notes = qs('#taskNotes').value.trim(); const dueVal = qs('#taskDue').value; const due = dueVal? new Date(dueVal).getTime(): null;
-      const tasks = state.users[state.currentUser].sections[state.currentSection].tasks;
-      if(state.editingTaskId){ const t = tasks.find(x=>x.id===state.editingTaskId); if(t){ t.title = title; t.notes = notes; t.due = due; t.archived = false; } }
-      else { tasks.push({ id: uid(), title, notes, due, createdAt: Date.now(), completed:false, completedAt:null, archived:false }); }
-      save(); closeModal(); renderTaskList(qs('#searchInput')?.value || ''); updateProgress(); updateNextTask(); renderHistoryList();
-    });
-
-    if(qs('#searchInput')) qs('#searchInput').addEventListener('input', (e)=> renderTaskList(e.target.value));
-  });
-
-  function toDatetimeLocal(date){ const off = date.getTimezoneOffset(); const d = new Date(date.getTime() - off*60*1000); return d.toISOString().slice(0,16); }
-  function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, (c)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;" })[c]); }
-
-  // startup
+/* AUTH handlers */
+function handleCreate(){
+  const u = qs('#loginUser')?.value?.trim();
+  const p = qs('#loginPass')?.value || '';
+  if(!u || !p){ alert('Enter username and password'); return; }
+  load(); ensureUserData(u); state.users[u].password = p; state.currentUser = u; state.currentSection = 'Personal';
+  const sel = qs('#themeSelect');
+  if(sel && sel.value) state.users[u].theme = state.users[u].theme || sel.value;
+  save(); showApp();
+}
+function handleSignIn(){
+  const u = qs('#loginUser')?.value?.trim(), p = qs('#loginPass')?.value || '';
   load();
-  Object.keys(state.users || {}).forEach(u=>{ defaultSections.forEach(s=>{ if(!state.users[u].sections[s]) state.users[u].sections[s] = { tasks: [] }; }); });
+  if(!u || !state.users[u] || state.users[u].password !== p){ alert('Invalid user or password (create account if new)'); return; }
+  state.currentUser = u; state.currentSection = state.currentSection || 'Personal'; save(); showApp();
+}
+
+/* DOM ready */
+document.addEventListener('DOMContentLoaded', ()=>{
+  const createBtn = qs('#createBtn'), signInBtn = qs('#signInBtn'), signOutBtn = qs('#signOutBtn');
+  const themeSel = qs('#themeSelect');
+  if(createBtn) createBtn.addEventListener('click', handleCreate);
+  if(signInBtn) signInBtn.addEventListener('click', handleSignIn);
+  if(signOutBtn) signOutBtn.addEventListener('click', ()=> { load(); state.currentUser=null; save(); location.reload(); });
+
+  // show password
+  const showPass = qs('#showPass'), togglePwdBtn = qs('#togglePwdBtn'), pwdInput = qs('#loginPass');
+  function setPasswordVisibility(visible){
+    if(!pwdInput) return;
+    pwdInput.type = visible ? 'text' : 'password';
+    if(togglePwdBtn) togglePwdBtn.textContent = visible ? '🙈' : '👁️';
+  }
+  if(showPass) showPass.addEventListener('change', (e)=> setPasswordVisibility(e.target.checked));
+  if(togglePwdBtn) togglePwdBtn.addEventListener('click', (ev)=>{ ev.preventDefault(); const isVisible = pwdInput && pwdInput.type === 'text'; setPasswordVisibility(!isVisible); if(showPass) showPass.checked = !isVisible; });
+
+  // theme selector change
+  if(themeSel){
+    load();
+    const cu = state.currentUser;
+    if(cu && state.users[cu] && state.users[cu].theme) themeSel.value = state.users[cu].theme;
+    else themeSel.value = localStorage.getItem(GLOBAL_THEME_KEY) || 'dark';
+    themeSel.addEventListener('change', (e)=>{
+      const next = e.target.value;
+      applyTheme(next);
+      try {
+        if(state.currentUser && state.users[state.currentUser]){
+          state.users[state.currentUser].theme = next;
+          save();
+        } else {
+          saveGlobalTheme(next);
+        }
+      } catch(err){ console.warn('Could not persist theme', err); }
+    });
+  }
+
+  initApp();
+});
+
+/* APP functions: same as previous robust implementation */
+function initApp(){
+  load();
+  Object.keys(state.users || {}).forEach(u => defaultSections.forEach(s=>{ if(!state.users[u].sections[s]) state.users[u].sections[s] = {tasks:[]}; }));
   if(state.currentUser && state.users[state.currentUser]) showApp();
-  window.addEventListener('beforeunload', ()=> save());
-  </script>
+}
+
+function showApp(){
+  qs('#loginScreen').style.display = 'none'; qs('#appRoot').style.display = 'block';
+  restoreUserTheme();
+  renderAccount(); renderSections(); renderHomeTiles(); renderSectionView(); startTicker();
+}
+
+function renderAccount(){ if(!state.currentUser) return; qs('#accountName').textContent = state.currentUser; qs('#userArea').innerHTML = `<div class=muted>${state.currentUser}</div>`; }
+
+function renderSections(){
+  const container = qs('#sectionList'); if(!container) return; container.innerHTML = '';
+  defaultSections.forEach(s=>{
+    const el = document.createElement('div'); el.className='nav-item'; el.dataset.section = s; el.innerHTML = `<div style="font-weight:700;color:var(--accent)">${s}</div>`;
+    el.addEventListener('click', ()=> { state.currentSection = s; save(); renderSectionView(); });
+    container.appendChild(el);
+  });
+}
+
+function renderHomeTiles(){ qsa('.tile').forEach(t=> t.addEventListener('click', ()=>{ state.currentSection = t.dataset.section; save(); renderSectionView(); })); }
+
+function renderSectionView(){
+  if(!state.currentUser) return;
+  qs('#homeTiles').style.display = 'none'; qs('#sectionView').style.display = 'block';
+  qs('#currentSectionTitle').textContent = state.currentSection;
+  renderTaskList(); renderHistoryList(); updateProgress(); updateNextTask();
+}
+
+function getTasks(){ const u = state.currentUser; return (state.users[u] && state.users[u].sections[state.currentSection] && state.users[u].sections[state.currentSection].tasks) || []; }
+
+function renderTaskList(filterText=''){
+  const list = qs('#taskList'); if(!list) return; list.innerHTML = '';
+  const tasks = getTasks().filter(t=>!t.archived && (!filterText || t.title.toLowerCase().includes(filterText.toLowerCase()))).sort((a,b)=> (a.due||0) - (b.due||0));
+  if(tasks.length===0){ list.innerHTML = '<div class="muted">No tasks. Click + New Task to add one.</div>'; return; }
+  tasks.forEach(t=>{
+    const el = document.createElement('div'); el.className='task';
+    const left = document.createElement('div'); left.className='left';
+    const cb = document.createElement('div'); cb.className = 'checkbox' + (t.completed? ' checked':''); cb.innerHTML = t.completed? '✔':'';
+    cb.addEventListener('click', ()=>{ t.completed = !t.completed; if(t.completed) t.completedAt = Date.now(); else t.completedAt = null; save(); renderTaskList(qs('#searchInput')?.value || ''); updateProgress(); updateNextTask(); });
+    const info = document.createElement('div'); info.innerHTML = `<div class="task-title">${escapeHtml(t.title)}</div><div class="task-meta">Due: ${t.due? new Date(t.due).toLocaleString():'—'} ${t.notes? ' • '+escapeHtml(t.notes):''}</div>`;
+    left.appendChild(cb); left.appendChild(info);
+    const actions = document.createElement('div'); actions.className='task-actions';
+    const edit = document.createElement('button'); edit.className='small-btn'; edit.textContent='Edit'; edit.addEventListener('click', ()=> openModal(t.id));
+    const del = document.createElement('button'); del.className='small-btn'; del.textContent='Delete'; del.addEventListener('click', ()=>{ if(confirm('Delete this task?')){ t.archived = true; save(); renderTaskList(qs('#searchInput')?.value || ''); updateProgress(); renderHistoryList(); updateNextTask(); } });
+    actions.appendChild(edit); actions.appendChild(del);
+    el.appendChild(left); el.appendChild(actions);
+    list.appendChild(el);
+  });
+}
+
+function renderHistoryList(){
+  const hist = qs('#historyList'); if(!hist) return; hist.innerHTML = '';
+  const tasksAll = (state.users[state.currentUser].sections[state.currentSection].tasks || []);
+  const histTasks = tasksAll.filter(t => (t.archived === true) || (t.completed === true) || (t.done === true));
+  if(histTasks.length === 0){ hist.innerHTML = '<div class="muted">No past tasks</div>'; return; }
+  histTasks.sort((a,b)=>{ const ta = a.completedAt || a.createdAt || 0; const tb = b.completedAt || b.createdAt || 0; return tb - ta; }).slice(0,12).forEach(t=>{
+    const d = document.createElement('div'); d.style.padding='8px 0';
+    const when = (t.completedAt || t.createdAt) ? (t.completedAt ? `Completed: ${new Date(t.completedAt).toLocaleString()}` : `Created: ${new Date(t.createdAt).toLocaleString()}`) : '';
+    d.innerHTML = `<div style="font-weight:700;color:#fff">${escapeHtml(t.title)}</div><div class="muted" style="font-size:12px">${when}</div>`;
+    hist.appendChild(d);
+  });
+}
+
+function updateProgress(){
+  try{
+    const tasks = (state.users[state.currentUser].sections[state.currentSection].tasks || []).filter(t=>!t.archived);
+    const total = tasks.length, done = tasks.filter(t=>t.completed).length;
+    const percent = total? Math.round((done/total)*100):0;
+    if(qs('#progressBar')) qs('#progressBar').style.width = percent + '%';
+    if(qs('#progressText')) qs('#progressText').textContent = `${done} of ${total} tasks completed (${percent}%)`;
+  } catch(e){ console.error('updateProgress error', e); }
+}
+
+let ticker = null;
+function getNextTask(){ try{ const tasks = (state.users[state.currentUser].sections[state.currentSection].tasks || []).filter(t=>!t.completed && !t.archived && t.due).sort((a,b)=> a.due - b.due); return tasks[0] || null; }catch(e){return null;} }
+function updateNextTask(){ const nt = getNextTask(); if(!nt){ if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = 'Next task: —'; return; } if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = `Next: ${nt.title} — due ${new Date(nt.due).toLocaleString()}`; }
+function startTicker(){ if(ticker) clearInterval(ticker); ticker = setInterval(()=>{ const nt = getNextTask(); if(!nt){ if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = 'Next task: —'; return; } const rem = nt.due - Date.now(); if(rem<=0){ if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = `Next: ${nt.title} — due now!`; return; } const h = Math.floor(rem/3600000); const m = Math.floor((rem%3600000)/60000); const s = Math.floor((rem%60000)/1000); if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = `Next: ${nt.title} — ${h}h ${m}m ${s}s left (due ${new Date(nt.due).toLocaleString()})`; },1000); }
+
+const modal = qs('#modal');
+function openModal(taskId){
+  state.editingTaskId = taskId || null;
+  if(taskId){
+    const t = state.users[state.currentUser].sections[state.currentSection].tasks.find(x=>x.id===taskId);
+    if(t){ qs('#modalTitle').textContent = 'Edit Task'; qs('#taskTitle').value = t.title; qs('#taskNotes').value = t.notes || ''; qs('#taskDue').value = t.due? toDatetimeLocal(new Date(t.due)) : ''; }
+  } else { qs('#modalTitle').textContent = 'New Task'; if(qs('#taskTitle')) qs('#taskTitle').value=''; if(qs('#taskNotes')) qs('#taskNotes').value=''; if(qs('#taskDue')) qs('#taskDue').value=''; }
+  if(modal) modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+}
+function closeModal(){ if(modal) modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); state.editingTaskId = null; }
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(qs('#addTaskBtn')) qs('#addTaskBtn').addEventListener('click', ()=> openModal());
+  if(qs('#cancelBtn')) qs('#cancelBtn').addEventListener('click', ()=> closeModal());
+  if(qs('#saveTaskBtn')) qs('#saveTaskBtn').addEventListener('click', ()=>{
+    const title = qs('#taskTitle').value.trim(); if(!title){ alert('Enter title'); return; }
+    const notes = qs('#taskNotes').value.trim(); const dueVal = qs('#taskDue').value; const due = dueVal? new Date(dueVal).getTime(): null;
+    const tasks = state.users[state.currentUser].sections[state.currentSection].tasks;
+    if(state.editingTaskId){ const t = tasks.find(x=>x.id===state.editingTaskId); if(t){ t.title = title; t.notes = notes; t.due = due; t.archived = false; } }
+    else { tasks.push({ id: uid(), title, notes, due, createdAt: Date.now(), completed:false, completedAt:null, archived:false }); }
+    save(); closeModal(); renderTaskList(qs('#searchInput')?.value || ''); updateProgress(); updateNextTask(); renderHistoryList();
+  });
+  if(qs('#searchInput')) qs('#searchInput').addEventListener('input', (e)=> renderTaskList(e.target.value));
+});
+
+/* utilities */
+function toDatetimeLocal(date){ const off = date.getTimezoneOffset(); const d = new Date(date.getTime() - off*60*1000); return d.toISOString().slice(0,16); }
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, (c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
+
+/* startup */
+load();
+Object.keys(state.users || {}).forEach(u=>{ defaultSections.forEach(s=>{ if(!state.users[u].sections[s]) state.users[u].sections[s] = {tasks:[]}; }); });
+
+// init theme select and particle state
+(function initTheme(){
+  const sel = qs('#themeSelect');
+  if(!sel) return;
+  load();
+  const cu = state.currentUser;
+  if(cu && state.users[cu] && state.users[cu].theme) sel.value = state.users[cu].theme;
+  else sel.value = localStorage.getItem(GLOBAL_THEME_KEY) || 'dark';
+  applyTheme(sel.value);
+})();
+
+if(state.currentUser && state.users[state.currentUser]) showApp();
+window.addEventListener('beforeunload', ()=> save());
+</script>
 </body>
 </html>
