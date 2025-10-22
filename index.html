@@ -3,9 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Life Productivity — To-Do App (themes + particles)</title>
+<title>Life Productivity — To-Do App (final)</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
+  /* Prevent horizontal rumble */
+  html, body { overflow-x: hidden; }
+
   /* Base color variables (overridden per theme) */
   :root{
     --bg: #0f1724;
@@ -20,7 +23,7 @@
     --bg:#f5f7fb; --card:#ffffff; --accent:#0ea5a3; --muted:#6b7280; --glass: rgba(0,0,0,0.04);
   }
 
-  /* Halloween theme: moody purple + orange */
+  /* Halloween theme */
   [data-theme="halloween"]{
     --bg: linear-gradient(180deg,#0b0712 0%, #1b0f25 50%, #2b152f 100%);
     --card: rgba(20,8,24,0.95);
@@ -40,15 +43,25 @@
 
   *{box-sizing:border-box;font-family:Inter,system-ui,Arial,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Helvetica;}
   html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  
+  /* PARTICLES container: behind content, never affecting layout or scroll */
+  #themeParticles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;        /* behind app */
+    overflow: hidden;  /* important: prevents scrollbar from particles */
+  }
+
   .app{max-width:1100px;width:calc(100% - 40px);padding:20px;margin:0;position:relative;z-index:2}
   header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
   .brand{display:flex;gap:12px;align-items:center}
-  .logo{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#042;
-         background:linear-gradient(135deg,var(--accent),#60a5fa);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+  .logo{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#042;background:linear-gradient(135deg,var(--accent),#60a5fa);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
   .title{font-size:18px;color:var(--accent);font-weight:700}
   .subtitle{font-size:12px;color:var(--muted)}
-  .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 6px 18px rgba(2,6,23,0.6);color:var(--muted);backdrop-filter: blur(6px);}
+  .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 6px 18px rgba(2,6,23,0.6);color:var(--muted);backdrop-filter: blur(6px);position:relative}
   .row{display:flex;gap:12px;align-items:center}
+
   /* Login */
   .login-wrap{max-width:420px;width:100%;margin:20px auto}
   .form-row{display:flex;flex-direction:column;margin-bottom:10px}
@@ -92,7 +105,26 @@
   .progress-wrap{margin-top:10px}
   .progress{height:12px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden}
   .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);width:0%;transition:width .5s ease}
-  .modal{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center;padding:20px}
+
+  /* make sure modal is topmost and not trapped by stacking contexts */
+  .modal {
+    z-index: 9999 !important;
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    background: rgba(0,0,0,0.45);
+  }
+  .modal .modal-card {
+    z-index: 10000;
+    position: relative;
+    max-width: 640px;
+    width: calc(100% - 32px);
+    margin: 0 16px;
+  }
+
   .modal.open{display:flex}
   .modal .modal-card{width:100%;max-width:540px}
   .muted{color:var(--muted);font-size:13px}
@@ -107,37 +139,20 @@
     select#themeSelect{width:100%}
   }
 
-  /* PARTICLES container: sits behind app content (z-index less than app) */
-  #themeParticles{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
-  .particle{position:absolute;will-change:transform,opacity;pointer-events:none;opacity:0.9}
-  /* snow fall */
-  @keyframes fall {
-    0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity:0; }
-    10% { opacity:0.9; }
-    100% { transform: translateY(110vh) translateX(var(--xShift,0px)) rotate(360deg); opacity:0.9; }
-  }
-  /* pumpkins fall with slight rotation */
-  @keyframes pumpkinFall {
-    0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity:0; }
-    10% { opacity:1; }
-    100% { transform: translateY(110vh) translateX(var(--xShift,0px)) rotate(720deg); opacity:0.95; }
-  }
-  /* bats float across */
-  @keyframes batFloat {
-    0% { transform: translateY(5vh) translateX(-10vw) rotate(-10deg); opacity:0; }
-    10% { opacity:1; }
-    50% { transform: translateY(20vh) translateX(60vw) rotate(10deg); }
-    100% { transform: translateY(35vh) translateX(110vw) rotate(0deg); opacity:0; }
-  }
-
-  /* style variations */
+  /* PARTICLES animations */
+  .particle{position:absolute;will-change:transform,opacity;pointer-events:none}
+  @keyframes fall { 0%{transform:translateY(-10vh) translateX(0) rotate(0deg);opacity:0}10%{opacity:0.9}100%{transform:translateY(110vh) translateX(var(--xShift,0px)) rotate(360deg);opacity:0.9} }
+  @keyframes pumpkinFall { 0%{transform:translateY(-10vh) translateX(0) rotate(0deg);opacity:0}10%{opacity:1}100%{transform:translateY(110vh) translateX(var(--xShift,0px)) rotate(720deg);opacity:0.95} }
+  @keyframes batFloat { 0%{transform:translateY(5vh) translateX(-10vw) rotate(-10deg);opacity:0}10%{opacity:1}50%{transform:translateY(20vh) translateX(60vw) rotate(10deg)}100%{transform:translateY(35vh) translateX(110vw) rotate(0deg);opacity:0} }
   .snow{font-size:var(--size,16px);color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.6);animation:fall var(--dur,10s) linear var(--delay,0s) infinite}
   .pumpkin{font-size:var(--size,24px);filter:drop-shadow(0 6px 10px rgba(0,0,0,0.6));animation:pumpkinFall var(--dur,12s) linear var(--delay,0s) infinite}
   .bat{font-size:var(--size,26px);color:rgba(10,10,10,0.95);text-shadow:0 6px 14px rgba(0,0,0,0.6);animation:batFloat var(--dur,8s) linear var(--delay,0s) infinite}
 </style>
 </head>
 <body data-theme="dark">
+  <!-- particle container (behind app) -->
   <div id="themeParticles" aria-hidden="true"></div>
+
   <div class="app" role="application">
     <header>
       <div class="brand" style="align-items:center">
@@ -285,7 +300,7 @@
   </div>
 
 <script>
-/* Single-file final script with theme selector including halloween & christmas decorations */
+/* Single-file final script with particle & stacking fixes included */
 const defaultSections = ['Personal','Home','School','Work'];
 const STORAGE_KEY = 'lp_users_v1';
 const GLOBAL_THEME_KEY = 'lp_global_theme_v1';
@@ -315,9 +330,10 @@ function ensureUserData(username){
   else defaultSections.forEach(s=>{ if(!state.users[username].sections[s]) state.users[username].sections[s] = {tasks:[]}; });
 }
 
-/* THEME + PARTICLES */
+/* PARTICLES container reference */
 const particleContainer = document.getElementById('themeParticles');
 
+/* THEME & PARTICLES */
 function applyTheme(t){
   if(!t) t='dark';
   document.body.setAttribute('data-theme', t);
@@ -337,18 +353,14 @@ function restoreUserTheme(){
 }
 function saveGlobalTheme(t){ try { localStorage.setItem(GLOBAL_THEME_KEY, t); } catch(e){ } }
 
-/* create particle elements depending on theme */
+/* particles creation utilities */
+function rand(min, max){ return Math.random()*(max-min)+min; }
 function createParticlesForTheme(theme){
-  // clear previous
   if(!particleContainer) return;
   particleContainer.innerHTML = '';
   if(theme === 'christmas') createSnow(36);
   else if(theme === 'halloween') createHalloweenMix(18);
-  // else nothing for dark/light
 }
-
-function rand(min, max){ return Math.random()*(max-min)+min; }
-
 function createSnow(count){
   for(let i=0;i<count;i++){
     const sp = document.createElement('div');
@@ -365,15 +377,12 @@ function createSnow(count){
     sp.style.setProperty('--delay', delay);
     sp.style.setProperty('--xShift', xShift);
     sp.style.opacity = (rand(0.5,0.95)).toFixed(2);
-    // slight variation in font-smoothing via transform
     particleContainer.appendChild(sp);
   }
 }
-
 function createHalloweenMix(count){
-  // mix pumpkins and bats
   for(let i=0;i<count;i++){
-    const isBat = Math.random() < 0.35; // some bats
+    const isBat = Math.random() < 0.35;
     const sp = document.createElement('div');
     sp.className = 'particle ' + (isBat ? 'bat' : 'pumpkin');
     sp.textContent = isBat ? '🦇' : '🎃';
@@ -452,7 +461,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   initApp();
 });
 
-/* APP functions: same as previous robust implementation */
+/* App functions (modal fix included) */
 function initApp(){
   load();
   Object.keys(state.users || {}).forEach(u => defaultSections.forEach(s=>{ if(!state.users[u].sections[s]) state.users[u].sections[s] = {tasks:[]}; }));
@@ -538,11 +547,33 @@ function startTicker(){ if(ticker) clearInterval(ticker); ticker = setInterval((
 const modal = qs('#modal');
 function openModal(taskId){
   state.editingTaskId = taskId || null;
+
+  // ensure modal is directly under body so it's not trapped by stacking contexts
+  const modalEl = document.getElementById('modal');
+  if (modalEl && modalEl.parentElement !== document.body) {
+    document.body.appendChild(modalEl);
+  }
+
   if(taskId){
     const t = state.users[state.currentUser].sections[state.currentSection].tasks.find(x=>x.id===taskId);
-    if(t){ qs('#modalTitle').textContent = 'Edit Task'; qs('#taskTitle').value = t.title; qs('#taskNotes').value = t.notes || ''; qs('#taskDue').value = t.due? toDatetimeLocal(new Date(t.due)) : ''; }
-  } else { qs('#modalTitle').textContent = 'New Task'; if(qs('#taskTitle')) qs('#taskTitle').value=''; if(qs('#taskNotes')) qs('#taskNotes').value=''; if(qs('#taskDue')) qs('#taskDue').value=''; }
-  if(modal) modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+    if(t){
+      qs('#modalTitle').textContent = 'Edit Task';
+      qs('#taskTitle').value = t.title;
+      qs('#taskNotes').value = t.notes || '';
+      qs('#taskDue').value = t.due? toDatetimeLocal(new Date(t.due)) : '';
+    }
+  } else {
+    qs('#modalTitle').textContent = 'New Task';
+    if(qs('#taskTitle')) qs('#taskTitle').value='';
+    if(qs('#taskNotes')) qs('#taskNotes').value='';
+    if(qs('#taskDue')) qs('#taskDue').value='';
+  }
+
+  if(modalEl){
+    modalEl.style.zIndex = 9999;
+    modalEl.classList.add('open');
+    modalEl.setAttribute('aria-hidden','false');
+  }
 }
 function closeModal(){ if(modal) modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); state.editingTaskId = null; }
 
@@ -568,7 +599,7 @@ function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, (
 load();
 Object.keys(state.users || {}).forEach(u=>{ defaultSections.forEach(s=>{ if(!state.users[u].sections[s]) state.users[u].sections[s] = {tasks:[]}; }); });
 
-// init theme select and particle state
+// initialize theme selection and particles
 (function initTheme(){
   const sel = qs('#themeSelect');
   if(!sel) return;
