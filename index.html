@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Life Productivity — To-Do App</title>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo">LP</div>
+        <div>
+          <div class="title">Life Productivity</div>
+          <div class="subtitle">Organize. Prioritize. Finish.</div>
+        </div>
+      </div>
+      <div class="row">
+        <div id="userArea" style="text-align:right"></div>
+        <button id="themeToggle" class="btn ghost">Toggle theme</button>
+      </div>
+    </header>
+
+    <!-- LOGIN -->
+    <div id="loginScreen" class="card login-wrap">
+      <h2 style="margin-top:0;color:var(--accent)">Welcome — Sign In</h2>
+      <div class="form-row"><label>Username</label><input id="loginUser" type="text" placeholder="username"></div>
+      <div class="form-row"><label>Password</label><input id="loginPass" type="password" placeholder="password"></div>
+      <div style="display:flex;gap:8px">
+        <button id="signInBtn" class="btn">Sign in</button>
+        <button id="createBtn" class="btn ghost">Create account</button>
+      </div>
+      <p class="muted" style="margin-top:10px">This demo stores users & tasks locally in your browser (localStorage). Use different usernames to simulate multiple accounts.</p>
+    </div>
+
+    <!-- APP -->
+    <div id="appRoot" style="display:none">
+      <div class="layout">
+        <nav>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <div>
+                <div class="section-title">Sections</div>
+                <div class="muted">Choose a workspace</div>
+              </div>
+            </div>
+            <div id="sectionList"></div>
+
+            <hr style="border:none;height:1px;background:rgba(255,255,255,0.03);margin:12px 0">
+
+            <div>
+              <div class="section-title">History</div>
+              <div class="muted">Past tasks per section</div>
+              <div id="historyList" style="margin-top:8px"></div>
+            </div>
+          </div>
+
+          <div style="height:14px"></div>
+          <div class="card" style="margin-top:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700;color:var(--accent)">Account</div>
+                <div id="accountName" class="muted"></div>
+              </div>
+              <div>
+                <button id="signOutBtn" class="small-btn">Sign out</button>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <main>
+          <div class="card">
+            <div class="header-bar">
+              <div>
+                <h2 id="currentSectionTitle" style="margin:0;color:#fff">Home</h2>
+                <div id="nextTaskBar" class="muted" style="margin-top:6px">Next task: —</div>
+              </div>
+              <div class="controls">
+                <input id="searchInput" class="search" placeholder="Search tasks...">
+                <button id="addTaskBtn" class="btn">+ New Task</button>
+              </div>
+            </div>
+
+            <div class="tiles" id="homeTiles">
+              <div class="tile" data-section="Personal"><h3>Personal</h3><p>Personal tasks and goals</p></div>
+              <div class="tile" data-section="Home"><h3>Home</h3><p>House chores and maintenance</p></div>
+              <div class="tile" data-section="School"><h3>School</h3><p>Assignments and study plans</p></div>
+              <div class="tile" data-section="Work"><h3>Work</h3><p>Professional tasks and projects</p></div>
+            </div>
+
+            <div id="sectionView" style="display:none; margin-top:12px">
+              <div class="row" style="justify-content:space-between;align-items:center">
+                <div class="muted">Tasks</div>
+                <div class="muted">Progress</div>
+              </div>
+
+              <div class="task-list" id="taskList"></div>
+
+              <div class="progress-wrap">
+                <div class="muted">Completion</div>
+                <div class="progress" style="margin-top:6px"><i id="progressBar"></i></div>
+                <div id="progressText" class="muted" style="margin-top:6px">0 of 0 tasks completed</div>
+              </div>
+            </div>
+
+          </div>
+          <footer>
+            <div class="muted">Life Productivity — simple, beautiful, local-only demo</div>
+          </footer>
+        </main>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal: Add/Edit Task -->
+  <div id="modal" class="modal">
+    <div class="modal-card card" style="padding:18px">
+      <h3 id="modalTitle" style="margin-top:0;color:var(--accent)">New Task</h3>
+      <div class="form-row"><label>Title</label><input id="taskTitle"></div>
+      <div class="form-row"><label>Notes</label><input id="taskNotes"></div>
+      <div class="form-row"><label>Due date & time (optional)</label><input id="taskDue" type="datetime-local"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+        <button id="cancelBtn" class="small-btn">Cancel</button>
+        <button id="saveTaskBtn" class="btn">Save Task</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
