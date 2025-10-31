@@ -3,15 +3,47 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Life Productivity — To-Do</title>
+<title>Life Productivity — Themes + Show Password</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
   /* Basic reset & fonts */
   html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Helvetica;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
   body{background:#0f1724;color:#94a3b8;display:flex;align-items:flex-start;justify-content:center;padding:18px;box-sizing:border-box;overflow-x:hidden}
 
-  :root{--card:#0b1320;--accent:#6ee7b7;--muted:#94a3b8;--glass:rgba(255,255,255,0.04);--danger:#ff6b6b;--success:#2dd4bf}
-  [data-theme="light"]{background:#f5f7fb;color:#6b7280}
+  :root{
+    --card:#0b1320;
+    --accent:#6ee7b7;
+    --muted:#94a3b8;
+    --glass:rgba(255,255,255,0.04);
+    --bg-linear: linear-gradient(180deg,#0b0911 0%,#15121a 100%);
+  }
+
+  /* Light theme */
+  [data-theme="light"]{
+    --bg-linear: linear-gradient(180deg,#f5f7fb 0%, #ffffff 100%);
+    --card:#ffffff; --accent:#0ea5a3; --muted:#6b7280; --glass: rgba(0,0,0,0.04);
+  }
+
+  /* Halloween */
+  [data-theme="halloween"]{
+    --bg-linear: linear-gradient(180deg,#0b0712 0%, #1b0f25 50%, #2b152f 100%);
+    --card: rgba(20,8,24,0.95);
+    --accent: #ff8a00;
+    --muted: #d9c4a8;
+    --glass: rgba(255,140,0,0.06);
+  }
+
+  /* Christmas */
+  [data-theme="christmas"]{
+    --bg-linear: linear-gradient(180deg,#031b10 0%, #08281a 50%, #0e3a22 100%);
+    --card: rgba(7,20,11,0.95);
+    --accent: #e11d48;
+    --muted: #cbe7d4;
+    --glass: rgba(255,255,255,0.03);
+  }
+
+  /* apply background var */
+  body { background: var(--bg-linear); }
 
   /* Particle layer (non-interactive) */
   #themeParticles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
@@ -70,6 +102,26 @@
   #accountList { margin-top:8px; display:flex; flex-direction:column; gap:6px; }
   @media (max-width:760px){ .auth-card-inner { flex-direction:column; align-items:stretch; } .auth-right { width:100%; flex:1 1 auto; } .auth-left { max-width:100%; } }
 
+  /* password toggle button */
+  .pwd-toggle {
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.06);
+    background:transparent;
+    padding:8px;
+    cursor:pointer;
+    font-size:14px;
+  }
+
+  /* theme particles styles & animations */
+  .particle{position:absolute;will-change:transform,opacity;pointer-events:none}
+  .snow{font-size:var(--size,16px);color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.6);animation:fall var(--dur,10s) linear var(--delay,0s) infinite}
+  .pumpkin{font-size:var(--size,24px);filter:drop-shadow(0 6px 10px rgba(0,0,0,0.6));animation:pumpkinFall var(--dur,12s) linear var(--delay,0s) infinite}
+  .bat{font-size:var(--size,26px);color:rgba(10,10,10,0.95);text-shadow:0 6px 14px rgba(0,0,0,0.6);animation:batFloat var(--dur,8s) linear var(--delay,0s) infinite}
+
+  @keyframes fall { 0%{transform:translateY(-10vh) translateX(0) rotate(0deg);opacity:0}10%{opacity:0.9}100%{transform:translateY(110vh) translateX(var(--xShift,0px)) rotate(360deg);opacity:0.9} }
+  @keyframes pumpkinFall { 0%{transform:translateY(-10vh) translateX(0) rotate(0deg);opacity:0}10%{opacity:1}100%{transform:translateY(110vh) translateX(var(--xShift,0px)) rotate(720deg);opacity:0.95} }
+  @keyframes batFloat { 0%{transform:translateY(5vh) translateX(-10vw) rotate(-10deg);opacity:0}10%{opacity:1}50%{transform:translateY(20vh) translateX(60vw) rotate(10deg)}100%{transform:translateY(35vh) translateX(110vw) rotate(0deg);opacity:0} }
+
   /* responsive */
   @media(max-width:980px){ .layout{grid-template-columns:1fr 300px} .tiles{grid-template-columns:repeat(2,1fr)} }
   @media(max-width:760px){ .layout{grid-template-columns:1fr} nav.side{position:relative} .tiles{grid-template-columns:1fr} .app{width:calc(100vw - 24px)} }
@@ -77,7 +129,7 @@
   /* helpful small styles */
   .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);font-size:13px}
   .section-card{padding:10px;border-radius:10px;margin-bottom:8px;cursor:pointer;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
-  /* small input styles to keep consistent look */
+  /* small input styles */
   input[type=text],input[type=password],input[type=email],input[type=datetime-local],select{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
 </style>
 </head>
@@ -122,6 +174,7 @@
           </div>
           <div class="field pw-row">
             <input id="quickPass" placeholder="password" type="password" />
+            <button id="toggleQuickPwd" class="pwd-toggle" aria-label="Show password">👁️</button>
             <button id="quickSignIn" class="btn">Sign in</button>
           </div>
           <div id="accountList" class="muted" style="font-size:13px">No accounts</div>
@@ -264,9 +317,9 @@
   </div>
 
 <script>
-/* Single-file app logic: local-only storage, task CRUD, reminders (mailto), and layout fixes */
+/* App logic with working Halloween/Christmas particles and password toggle */
 
-const STORAGE_KEY = 'LP_FULL_APP_V1';
+const STORAGE_KEY = 'LP_THEMED_V1';
 const qs = (s, el=document) => el.querySelector(s);
 const qsa = (s, el=document) => Array.from((el||document).querySelectorAll(s));
 const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -281,9 +334,11 @@ const defaultSections = {
 
 let state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] };
 
+/* storage */
 function load(){ try{ const raw = localStorage.getItem(STORAGE_KEY); if(!raw){ state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] }; return; } state = JSON.parse(raw); if(!state.users) state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] }; }catch(e){ console.warn('load error', e); state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] }; } }
 function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.warn('save failed', e); } }
 
+/* ensure user & default tasks */
 function ensureUser(u, email){
   if(!u) return;
   if(!state.users[u]){
@@ -297,22 +352,67 @@ function ensureUser(u, email){
   }
 }
 
-/* Theme (minimal) */
+/* particles utils */
 const particleContainer = document.getElementById('themeParticles');
-function applyTheme(t){ if(!t) t='dark'; document.body.setAttribute('data-theme', t); if(t==='christmas'){ particleContainer.innerHTML=''; for(let i=0;i<28;i++){ const sp=document.createElement('div'); sp.className='particle'; sp.textContent='❄'; sp.style.left=(Math.random()*100)+'vw'; sp.style.top=(Math.random()*-10)+'vh'; sp.style.opacity=0.7; particleContainer.appendChild(sp);} } else particleContainer.innerHTML=''; }
-(function initTheme(){ const stored = localStorage.getItem('lp_global_theme_v1') || 'dark'; applyTheme(stored); })();
+function rand(min,max){ return Math.random()*(max-min)+min; }
 
-/* UI helpers */
+function createChristmas(count=28){
+  particleContainer.innerHTML='';
+  for(let i=0;i<count;i++){
+    const sp = document.createElement('div'); sp.className='particle snow'; sp.textContent='❄';
+    sp.style.left = rand(0,100)+'vw';
+    sp.style.setProperty('--size', Math.round(rand(12,32))+'px');
+    sp.style.setProperty('--dur', rand(6,16).toFixed(2)+'s');
+    sp.style.setProperty('--delay', rand(0,8).toFixed(2)+'s');
+    sp.style.setProperty('--xShift', Math.round(rand(-80,80))+'px');
+    sp.style.opacity = rand(0.5,0.95).toFixed(2);
+    particleContainer.appendChild(sp);
+  }
+}
+
+function createHalloween(count=18){
+  particleContainer.innerHTML='';
+  for(let i=0;i<count;i++){
+    const isBat = Math.random() < 0.45;
+    const sp = document.createElement('div'); sp.className='particle ' + (isBat ? 'bat' : 'pumpkin');
+    sp.textContent = isBat ? '🦇' : '🎃';
+    sp.style.left = rand(-10,90)+'vw';
+    sp.style.top = rand(-20,5) + 'vh';
+    sp.style.setProperty('--size', Math.round(rand(18,42))+'px');
+    sp.style.setProperty('--dur', (isBat ? rand(6,14) : rand(8,18)).toFixed(2)+'s');
+    sp.style.setProperty('--delay', rand(0,6).toFixed(2)+'s');
+    sp.style.setProperty('--xShift', Math.round(rand(-120,120))+'px');
+    sp.style.opacity = rand(0.6,0.98).toFixed(2);
+    particleContainer.appendChild(sp);
+  }
+}
+
+function clearParticles(){ particleContainer.innerHTML=''; }
+
+/* apply theme: set attribute, update selector, spawn particles, persist */
+function applyTheme(t){
+  if(!t) t='dark';
+  document.body.setAttribute('data-theme', t);
+  const sel = qs('#themeSelect'); if(sel && sel.value !== t) sel.value = t;
+  // spawn particles per theme
+  if(t === 'christmas') createChristmas(28);
+  else if(t === 'halloween') createHalloween(18);
+  else clearParticles();
+}
+
+/* save global theme helper */
+function saveGlobalTheme(t){ try{ localStorage.setItem('lp_global_theme_v1', t); }catch(e){} }
+
+/* AUTH and UI wiring */
 function showAuth(){ qs('#authArea').style.display='block'; qs('#appRoot').style.display='none'; populateAccountList(); }
 function showApp(){ qs('#authArea').style.display='none'; qs('#appRoot').style.display='block'; applyTheme(state.currentUser && state.users[state.currentUser] ? state.users[state.currentUser].theme : localStorage.getItem('lp_global_theme_v1') || 'dark'); renderAccount(); renderSections(); renderHomeTiles(); renderSectionView(); startTicker(); renderLeaderboard(); }
 
-/* Accounts UI */
 function populateAccountList(){ const c = qs('#accountList'); if(!c) return; c.innerHTML=''; const names = Object.keys(state.users); if(!names.length){ c.innerHTML = '<span class="muted">No accounts</span>'; return; } names.forEach(n=>{ const b = document.createElement('button'); b.className='small-btn'; b.textContent = n; b.dataset.u = n; b.addEventListener('click', ()=>{ qs('#quickUser').value = n; qs('#quickPass').value = state.users[n].password || ''; }); c.appendChild(b); }); }
 
 function createAccount(u,p,email){ if(!u||!p){ alert('Enter username and password'); return; } load(); ensureUser(u,email); state.users[u].password = p; state.users[u].email = email || ''; state.currentUser = u; state.currentSection = 'Home'; save(); showApp(); }
 function signIn(u,p){ load(); if(!u || !state.users[u] || state.users[u].password !== p){ alert('Invalid user or password (create account if new)'); return; } state.currentUser = u; state.currentSection = state.currentSection || 'Home'; save(); showApp(); }
 
-/* Render functions */
+/* render helpers */
 function renderAccount(){ if(!state.currentUser) return; qs('#accountName').textContent = state.currentUser; qs('#userPoints').textContent = `Points: ${state.users[state.currentUser].points||0}`; qs('#pointsDisplay').textContent = `Points: ${state.users[state.currentUser].points||0}`; renderRankForUser(); }
 function renderRankForUser(){ const list = Object.keys(state.users).map(u=>({u,points: state.users[u].points||0})).sort((a,b)=>b.points-a.points); const idx = list.findIndex(x=>x.u===state.currentUser); const r = idx>=0?idx+1:'—'; qs('#userRank').textContent = `Rank: ${r}`; qs('#rankDisplay').textContent = `Rank: ${r}`; }
 
@@ -365,11 +465,11 @@ function openReminderMail(task){ const subject = encodeURIComponent(`Reminder: "
 /* Leaderboard */
 function renderLeaderboard(){ const c = qs('#leaderboard'); if(!c) return; c.innerHTML=''; const users = Object.keys(state.users).map(u=>({u,points:state.users[u].points||0})).sort((a,b)=>b.points-a.points).slice(0,8); users.forEach((it,idx)=>{ const el = document.createElement('div'); el.style.padding='6px 0'; el.innerHTML = `<div style="display:flex;justify-content:space-between"><div style="min-width:0"><strong style="color:var(--accent)">${idx+1}. ${escapeHtml(it.u)}</strong><div class="muted" style="font-size:12px">Points: ${it.points}</div></div><div class="muted" style="font-size:12px">${it.u===state.currentUser?'You':''}</div></div>`; c.appendChild(el); }); }
 
-/* Helpers */
+/* Utils */
 function toDatetimeLocal(date){ const off = date.getTimezoneOffset(); const d = new Date(date.getTime() - off*60*1000); return d.toISOString().slice(0,16); }
 function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, (c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
 
-/* Ticker */
+/* ticker */
 let ticker = null;
 function startTicker(){ if(ticker) clearInterval(ticker); ticker = setInterval(()=>{ updateNextTask(); checkReminders(); },1000); }
 
@@ -377,6 +477,19 @@ function startTicker(){ if(ticker) clearInterval(ticker); ticker = setInterval((
 document.addEventListener('DOMContentLoaded', ()=>{
   // ensure modal appended to body to avoid stacking traps
   if(modal && modal.parentElement !== document.body) document.body.appendChild(modal);
+
+  // toggle password button
+  const toggleBtn = qs('#toggleQuickPwd');
+  if(toggleBtn){
+    toggleBtn.addEventListener('click', (ev)=>{
+      ev.preventDefault();
+      const input = qs('#quickPass');
+      if(!input) return;
+      const isShown = input.type === 'text';
+      input.type = isShown ? 'password' : 'text';
+      toggleBtn.textContent = isShown ? '👁️' : '🙈';
+    });
+  }
 
   // Wire auth controls
   qs('#openCreate').addEventListener('click', ()=>{
@@ -387,9 +500,28 @@ document.addEventListener('DOMContentLoaded', ()=>{
   qs('#quickSignIn').addEventListener('click', ()=> signIn(qs('#quickUser').value.trim(), qs('#quickPass').value));
   qs('#quickPass').addEventListener('keydown', e=>{ if(e.key==='Enter') signIn(qs('#quickUser').value.trim(), qs('#quickPass').value); });
 
-  // theme selector
+  // theme selector: also persist per-user or globally
   const themeSel = qs('#themeSelect');
-  if(themeSel){ themeSel.addEventListener('change', (e)=>{ const t = e.target.value; applyTheme(t); try{ if(state.currentUser && state.users[state.currentUser]){ state.users[state.currentUser].theme = t; save(); } else localStorage.setItem('lp_global_theme_v1', t); }catch(err){} }); }
+  if(themeSel){
+    // initialize selector value (per-user or global)
+    load();
+    const cu = state.currentUser;
+    if(cu && state.users[cu] && state.users[cu].theme) themeSel.value = state.users[cu].theme;
+    else themeSel.value = localStorage.getItem('lp_global_theme_v1') || 'dark';
+
+    themeSel.addEventListener('change', (e)=>{
+      const next = e.target.value;
+      applyTheme(next);
+      try {
+        if(state.currentUser && state.users[state.currentUser]){
+          state.users[state.currentUser].theme = next;
+          save();
+        } else {
+          saveGlobalTheme(next);
+        }
+      } catch(err){ console.warn('Could not persist theme', err); }
+    });
+  }
 
   // sign out
   qs('#signOutBtn').addEventListener('click', ()=>{ load(); state.currentUser=null; save(); location.reload(); });
@@ -420,14 +552,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
   startTicker();
 });
 
-/* Helper render wrapper */
+/* helper wrapper */
 function renderSectionView(){ if(!state.currentUser) return; qs('#currentSectionTitle').textContent = state.currentSection; renderTaskList(qs('#searchInput')?.value||''); renderHistoryList(); updateProgress(); updateNextTask(); renderAccount(); renderSections(); rebuildReminderQueue(); renderLeaderboard(); }
 
-/* expose for debugging */
+/* Expose for debugging */
 window.lp_state = state;
 window.lp_save = save;
 </script>
 </body>
 </html>
+
 
 
