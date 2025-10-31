@@ -16,6 +16,8 @@
     --accent: #6ee7b7;
     --muted: #94a3b8;
     --glass: rgba(255,255,255,0.04);
+    --danger: #ff6b6b;
+    --success: #2dd4bf;
   }
 
   /* Light theme */
@@ -42,115 +44,74 @@
   }
 
   *{box-sizing:border-box;font-family:Inter,system-ui,Arial,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Helvetica;}
-  /* Desktop default: vertically center */
   html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-  
+
   /* PARTICLES container: behind content, never affecting layout or scroll */
   #themeParticles {
     position: fixed;
     inset: 0;
     pointer-events: none;
     z-index: 0;        /* behind app */
-    overflow: hidden;  /* important: prevents scrollbar from particles */
+    overflow: hidden;  /* prevents scrollbar */
   }
 
-  .app{max-width:1100px;width:calc(100% - 40px);padding:20px;margin:0;position:relative;z-index:2}
-  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .app{max-width:1200px;width:calc(100% - 40px);padding:22px;margin:0;position:relative;z-index:2}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
   .brand{display:flex;gap:12px;align-items:center}
-  .logo{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#042;background:linear-gradient(135deg,var(--accent),#60a5fa);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
-  .title{font-size:18px;color:var(--accent);font-weight:700}
+  .logo{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#042;background:linear-gradient(135deg,var(--accent),#60a5fa);box-shadow:0 10px 30px rgba(0,0,0,0.45)}
+  .title{font-size:20px;color:var(--accent);font-weight:800}
   .subtitle{font-size:12px;color:var(--muted)}
-  .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 6px 18px rgba(2,6,23,0.6);color:var(--muted);backdrop-filter: blur(6px);position:relative}
+  .card{background:var(--card);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(2,6,23,0.55);color:var(--muted);backdrop-filter: blur(6px);position:relative}
   .row{display:flex;gap:12px;align-items:center}
+  .muted{color:var(--muted);font-size:13px}
 
-  /* Login */
-  .login-wrap{max-width:420px;width:100%;margin:20px auto}
-  .form-row{display:flex;flex-direction:column;margin-bottom:10px}
+  /* Login / auth */
+  .auth-wrap { max-width:900px; margin: 18px auto; display:flex; gap:20px; align-items:stretch; }
+  .auth-left, .auth-right { flex:1; border-radius:12px; padding:18px; }
+  .auth-left { display:flex; flex-direction:column; gap:10px; justify-content:center; }
+  .auth-right { display:flex; flex-direction:column; gap:8px; }
   label{font-size:13px;color:var(--muted);margin-bottom:6px}
-  input[type=text],input[type=password],input[type=datetime-local]{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+  input[type=text], input[type=password], input[type=email], input[type=datetime-local], select { padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit }
   .btn{padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),#60a5fa);color:#042;font-weight:700;cursor:pointer}
   .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
-  .login-actions{display:flex;gap:10px;margin-top:8px}
-  .login-extra{margin-top:10px;color:var(--muted);font-size:13px}
-  .show-pass input[type=checkbox]{margin-right:8px;transform:translateY(2px)}
-  .pw-row{display:flex;gap:8px;align-items:center}
-  .pw-row input{flex:1}
-  .icon-btn{background:transparent;border:1px solid rgba(255,255,255,0.04);border-radius:8px;padding:8px;cursor:pointer;font-size:16px;color:var(--muted)}
-  .icon-btn:active{transform:translateY(1px)}
-  /* theme selector */
-  .theme-select{display:flex;gap:8px;align-items:center}
-  select#themeSelect{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+  .small-btn{padding:6px 10px;border-radius:8px;border:none;background:transparent;color:var(--muted);cursor:pointer}
 
   /* Layout */
-  .layout{display:grid;grid-template-columns:260px 1fr;gap:16px}
-  nav{min-height:520px}
-  .nav-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;cursor:pointer}
-  .nav-item:hover{background:var(--glass)}
-  .section-title{font-weight:700;color:var(--accent);margin-bottom:8px}
-  .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-  .tile{padding:16px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);cursor:pointer}
-  .tile h3{margin:0;color:#fff}
-  .tile p{margin:6px 0 0 0;color:var(--muted);font-size:13px}
+  .layout{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start}
+  .main-area{min-height:520px}
+  nav.side{position:sticky;top:20px}
+  .section-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+  .section-chip{padding:12px;border-radius:10px;cursor:pointer;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);display:flex;align-items:center;justify-content:space-between}
+  .section-chip.active{box-shadow:0 6px 18px rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.03)}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+  .tile{padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);cursor:pointer}
   .header-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
   .controls{display:flex;gap:8px;align-items:center}
   .search{padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
   .task-list{margin-top:12px;display:flex;flex-direction:column;gap:10px}
-  .task{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), transparent)}
-  .task .left{display:flex;align-items:center;gap:12px}
-  .checkbox{width:18px;height:18px;border-radius:5px;border:2px solid rgba(255,255,255,0.08);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+  .task{display:flex;flex-direction:row;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), transparent)}
+  .task .left{display:flex;align-items:center;gap:12px;min-width:0}
+  .checkbox{width:18px;height:18px;border-radius:5px;border:2px solid rgba(255,255,255,0.08);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 24px}
   .checkbox.checked{background:linear-gradient(90deg,var(--accent),#60a5fa);border:none}
-  .task-title{font-weight:600;color:#fff}
-  .task-meta{font-size:12px;color:var(--muted)}
+  .task-title{font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .task-meta{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .task-actions{display:flex;gap:8px;align-items:center}
-  .small-btn{padding:6px 8px;border-radius:8px;border:none;background:transparent;color:var(--muted);cursor:pointer}
   .progress-wrap{margin-top:10px}
-  .progress{height:12px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden}
+  .progress{height:14px;background:rgba(255,255,255,0.06);border-radius:10px;overflow:hidden}
   .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);width:0%;transition:width .5s ease}
 
-  /* make sure modal is topmost and not trapped by stacking contexts */
-  .modal {
-    z-index: 9999 !important;
-    position: fixed;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    pointer-events: auto;
-    background: rgba(0,0,0,0.45);
-  }
-  .modal .modal-card {
-    z-index: 10000;
-    position: relative;
-    max-width: 640px;
-    width: calc(100% - 32px);
-    margin: 0 16px;
-  }
-
+  /* modal */
+  .modal { z-index: 9999 !important; position: fixed; inset: 0; display: none; align-items: center; justify-content: center; pointer-events: auto; background: rgba(0,0,0,0.45); }
+  .modal .modal-card { z-index: 10000; position: relative; max-width: 760px; width: calc(100% - 32px); margin: 0 16px; }
   .modal.open{display:flex}
-  .modal .modal-card{width:100%;max-width:540px}
-  .muted{color:var(--muted);font-size:13px}
-  footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
-  @media(max-width:900px){.layout{grid-template-columns:1fr}.tiles{grid-template-columns:1fr}}
-  @media(max-width:700px){
-    /* On small screens, stop vertically centering and allow natural scroll */
-    html, body {
-      align-items: flex-start; /* switch to top alignment */
-      justify-content: flex-start;
-      padding-top: 18px;
-      padding-bottom: 24px;
-      min-height: 100vh;
-    }
-    .app { margin: 0 auto; width: calc(100% - 24px); max-width: 980px; padding: 16px; }
-    header { align-items: flex-start; gap: 8px; }
-    nav { min-height: auto; }
-    .modal .modal-card { max-height: 90vh; overflow: auto; margin: 8px; }
-    .tiles { gap: 10px; grid-template-columns: 1fr; }
-    #themeParticles { opacity: 0.95; }
-  }
-  @media(max-width:380px){
-    .login-wrap { margin: 12px auto; padding: 12px; }
-    .login-actions .btn { font-size: 14px; padding: 10px; }
-    .icon-btn { padding: 6px; font-size: 14px; }
+
+  /* compact responsive */
+  @media(max-width:1000px){ .layout{grid-template-columns:1fr 300px} .tiles{grid-template-columns:repeat(2,1fr)} }
+  @media(max-width:760px){
+    html, body { align-items:flex-start; padding-top:18px; min-height:100vh; }
+    .layout{grid-template-columns:1fr}
+    nav.side{position:relative;top:auto}
+    .tiles{grid-template-columns:1fr}
   }
 
   /* PARTICLES animations */
@@ -161,10 +122,14 @@
   .snow{font-size:var(--size,16px);color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.6);animation:fall var(--dur,10s) linear var(--delay,0s) infinite}
   .pumpkin{font-size:var(--size,24px);filter:drop-shadow(0 6px 10px rgba(0,0,0,0.6));animation:pumpkinFall var(--dur,12s) linear var(--delay,0s) infinite}
   .bat{font-size:var(--size,26px);color:rgba(10,10,10,0.95);text-shadow:0 6px 14px rgba(0,0,0,0.6);animation:batFloat var(--dur,8s) linear var(--delay,0s) infinite}
+
+  /* small helpers */
+  .pill {display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);font-size:12px}
+  .encourage {font-weight:700;color:var(--accent);margin-top:8px}
+  .meta-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 </style>
 </head>
 <body data-theme="dark">
-  <!-- particle container (behind app) -->
   <div id="themeParticles" aria-hidden="true"></div>
 
   <div class="app" role="application">
@@ -179,82 +144,69 @@
 
       <div class="row" style="align-items:center">
         <div id="userArea" style="text-align:right"></div>
-        <div class="theme-select">
-          <label for="themeSelect" style="font-size:13px;color:var(--muted);margin-right:6px">Theme</label>
-          <select id="themeSelect" aria-label="Choose theme">
-            <option value="dark">Dark</option>
-            <option value="light">Light</option>
-            <option value="halloween">Halloween</option>
-            <option value="christmas">Christmas</option>
-          </select>
+        <div class="row" style="gap:10px;align-items:center">
+          <div class="pill" id="pointsDisplay">Points: 0</div>
+          <div class="pill" id="rankDisplay">Rank: —</div>
+          <div class="theme-select">
+            <label for="themeSelect" style="font-size:13px;color:var(--muted);margin-right:6px">Theme</label>
+            <select id="themeSelect" aria-label="Choose theme">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+              <option value="halloween">Halloween</option>
+              <option value="christmas">Christmas</option>
+            </select>
+          </div>
         </div>
       </div>
     </header>
 
-    <!-- LOGIN -->
-    <div id="loginScreen" class="card login-wrap">
-      <h2 style="margin-top:0;color:var(--accent)">Welcome — Sign In</h2>
+    <!-- AUTH area (shown when not signed in) -->
+    <div id="authArea" class="card auth-wrap" style="display:block">
+      <div class="auth-left card auth-left">
+        <h2 style="margin-top:0;color:var(--accent)">Welcome</h2>
+        <div class="muted">Sign-in or create an account. The app stores your data locally in your browser.</div>
 
-      <div class="form-row">
-        <label>Username</label>
-        <input id="loginUser" type="text" placeholder="username" autocomplete="username">
-      </div>
+        <div style="margin-top:12px">
+          <div style="display:flex;gap:8px">
+            <input id="quickUser" type="text" placeholder="username" style="flex:1" />
+            <input id="quickPass" type="password" placeholder="password" style="flex:1" />
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="quickSignIn" class="btn">Sign in</button>
+            <button id="openCreate" class="btn ghost">Create account</button>
+          </div>
+        </div>
 
-      <div class="form-row">
-        <label>Password</label>
-        <div class="pw-row">
-          <input id="loginPass" type="password" placeholder="password" autocomplete="current-password">
-          <button id="togglePwdBtn" class="icon-btn" aria-label="Show password">👁️</button>
+        <hr style="border:none;height:1px;background:rgba(255,255,255,0.03);margin:12px 0">
+
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:700;color:var(--accent)">Existing accounts</div>
+            <div class="muted" style="font-size:12px">Pick to autofill</div>
+          </div>
+          <div id="accountList" style="margin-top:10px"></div>
         </div>
       </div>
 
-      <div class="login-actions">
-        <button id="signInBtn" class="btn">Sign in</button>
-        <button id="createBtn" class="btn ghost">Create account</button>
-      </div>
-
-      <div class="login-extra">
-        <label class="show-pass"><input id="showPass" type="checkbox"> Show password</label>
+      <div class="auth-right card" style="flex:0 0 420px">
+        <h3 style="margin-top:0;color:var(--accent)">Create account</h3>
+        <div class="form-row"><label>Username</label><input id="createUser" type="text" placeholder="username"></div>
+        <div class="form-row"><label>Email (for reminders)</label><input id="createEmail" type="email" placeholder="you@example.com"></div>
+        <div class="form-row"><label>Password</label><input id="createPass" type="password" placeholder="password"></div>
+        <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end">
+          <button id="createCancel" class="small-btn">Cancel</button>
+          <button id="createConfirm" class="btn">Create</button>
+        </div>
+        <div style="margin-top:12px" class="muted">
+          Accounts are stored in your browser only. Use a real email if you want the app to prepare email reminders (it will only open your mail client at reminder time).
+        </div>
       </div>
     </div>
 
     <!-- APP -->
     <div id="appRoot" style="display:none">
       <div class="layout">
-        <nav>
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-              <div>
-                <div class="section-title">Sections</div>
-                <div class="muted">Choose a workspace</div>
-              </div>
-            </div>
-            <div id="sectionList"></div>
-
-            <hr style="border:none;height:1px;background:rgba(255,255,255,0.03);margin:12px 0">
-
-            <div>
-              <div class="section-title">History</div>
-              <div class="muted">Past tasks per section</div>
-              <div id="historyList" style="margin-top:8px"></div>
-            </div>
-          </div>
-
-          <div style="height:14px"></div>
-          <div class="card" style="margin-top:10px">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div>
-                <div style="font-weight:700;color:var(--accent)">Account</div>
-                <div id="accountName" class="muted"></div>
-              </div>
-              <div>
-                <button id="signOutBtn" class="small-btn">Sign out</button>
-              </div>
-            </div>
-          </div>
-        </nav>
-
-        <main>
+        <main class="main-area">
           <div class="card">
             <div class="header-bar">
               <div>
@@ -264,267 +216,413 @@
               <div class="controls">
                 <input id="searchInput" class="search" placeholder="Search tasks...">
                 <button id="addTaskBtn" class="btn">+ New Task</button>
+                <button id="manualBtn" class="small-btn">User manual</button>
+                <button id="signOutBtn" class="small-btn">Sign out</button>
               </div>
             </div>
 
-            <div class="tiles" id="homeTiles">
-              <div class="tile" data-section="Personal"><h3>Personal</h3><p>Personal tasks and goals</p></div>
-              <div class="tile" data-section="Home"><h3>Home</h3><p>House chores and maintenance</p></div>
-              <div class="tile" data-section="School"><h3>School</h3><p>Assignments and study plans</p></div>
-              <div class="tile" data-section="Work"><h3>Work</h3><p>Professional tasks and projects</p></div>
-            </div>
+            <div style="display:flex;gap:18px;align-items:flex-start">
+              <div style="flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div class="muted">Tasks</div>
+                  <div class="muted">Section progress</div>
+                </div>
 
-            <div id="sectionView" style="display:none; margin-top:12px">
-              <div class="row" style="justify-content:space-between;align-items:center">
-                <div class="muted">Tasks</div>
-                <div class="muted">Progress</div>
+                <div class="task-list" id="taskList"></div>
+
+                <div class="progress-wrap">
+                  <div class="muted">Completion</div>
+                  <div class="progress" style="margin-top:6px"><i id="progressBar"></i></div>
+                  <div id="progressText" class="muted" style="margin-top:6px">0 of 0 tasks completed</div>
+                </div>
+                <div id="encourageMsg" class="encourage"></div>
               </div>
 
-              <div class="task-list" id="taskList"></div>
+              <aside style="width:280px">
+                <div class="card" style="margin-bottom:12px">
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                      <div style="font-weight:700;color:var(--accent)">Account</div>
+                      <div id="accountName" class="muted"></div>
+                    </div>
+                    <div style="text-align:right">
+                      <div id="userPoints" class="muted">Points: 0</div>
+                      <div id="userRank" class="muted">Rank: —</div>
+                    </div>
+                  </div>
+                </div>
 
-              <div class="progress-wrap">
-                <div class="muted">Completion</div>
-                <div class="progress" style="margin-top:6px"><i id="progressBar"></i></div>
-                <div id="progressText" class="muted" style="margin-top:6px">0 of 0 tasks completed</div>
-              </div>
+                <div class="card" style="margin-bottom:12px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                    <div style="font-weight:700;color:var(--accent)">Sections</div>
+                    <div class="muted" style="font-size:12px">Pick workspace</div>
+                  </div>
+                  <div id="sectionList" class="section-list"></div>
+                </div>
+
+                <div class="card">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                    <div style="font-weight:700;color:var(--accent)">Task history</div>
+                    <div class="muted" style="font-size:12px">Past 12 items</div>
+                  </div>
+                  <div id="historyList" style="margin-top:8px"></div>
+                </div>
+              </aside>
             </div>
-
           </div>
-          <footer>
+
+          <footer style="margin-top:12px">
             <div class="muted">Life Productivity — simple, beautiful, local-only demo</div>
           </footer>
         </main>
+
+        <nav class="side">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <div>
+                <div class="section-title">Home Tiles</div>
+                <div class="muted">Quick pick a section</div>
+              </div>
+            </div>
+            <div id="homeTiles" class="tiles">
+              <div class="tile" data-section="Personal"><h3>Personal</h3><p class="muted">Habits & personal goals</p></div>
+              <div class="tile" data-section="Home"><h3>Home</h3><p class="muted">Chores & upkeep</p></div>
+              <div class="tile" data-section="School"><h3>School</h3><p class="muted">Assignments & study</p></div>
+              <div class="tile" data-section="Work"><h3>Work</h3><p class="muted">Jobs & projects</p></div>
+              <div class="tile" data-section="Community"><h3>Community</h3><p class="muted">Volunteering & events</p></div>
+            </div>
+            <hr style="border:none;height:1px;background:rgba(255,255,255,0.03);margin:12px 0">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div style="font-weight:700;color:var(--accent)">Leaderboard</div>
+                <div class="muted" style="font-size:12px">Top local users</div>
+              </div>
+              <div id="leaderboard" style="margin-top:8px"></div>
+            </div>
+          </div>
+        </nav>
       </div>
     </div>
-
   </div>
 
-  <!-- Modal -->
+  <!-- Modals -->
   <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-card card" style="padding:18px">
       <h3 id="modalTitle" style="margin-top:0;color:var(--accent)">New Task</h3>
       <div class="form-row"><label>Title</label><input id="taskTitle"></div>
       <div class="form-row"><label>Notes</label><input id="taskNotes"></div>
+      <div class="form-row"><label>Reward (describe)</label><input id="taskReward" placeholder="e.g. 10 points or watch 30m show"></div>
+      <div class="form-row"><label>Points awarded (numeric)</label><input id="taskPoints" type="text" placeholder="e.g. 10"></div>
       <div class="form-row"><label>Due date & time (optional)</label><input id="taskDue" type="datetime-local"></div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+        <label style="font-size:13px" title="Notify by email when reminder threshold is reached">
+          <input id="taskEmailRem" type="checkbox"> Email reminder (open mail client)
+        </label>
+        <label style="font-size:13px;margin-left:6px">
+          Reminder before:
+          <select id="reminderBefore">
+            <option value="86400000">1 day before</option>
+            <option value="3600000">1 hour before</option>
+            <option value="0">At due time</option>
+          </select>
+        </label>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
         <button id="cancelBtn" class="small-btn">Cancel</button>
         <button id="saveTaskBtn" class="btn">Save Task</button>
       </div>
     </div>
   </div>
 
+  <!-- Reminder modal -->
+  <div id="reminderModal" class="modal" aria-hidden="true">
+    <div class="modal-card card" style="padding:16px">
+      <h3 style="margin-top:0;color:var(--accent)">Reminder — Task due soon</h3>
+      <div id="reminderBody" class="muted"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button id="dismissReminder" class="small-btn">Dismiss</button>
+        <button id="sendReminderEmail" class="btn">Open email client</button>
+      </div>
+    </div>
+  </div>
+
 <script>
-/* Single-file final script with particle & stacking fixes included */
-const defaultSections = ['Personal','Home','School','Work'];
-const STORAGE_KEY = 'lp_users_v1';
-const GLOBAL_THEME_KEY = 'lp_global_theme_v1';
+/* Single-file final script implementing requested features.
+   Notes:
+   - Email reminders are implemented client-side: when reminder time arrives the app shows a modal and opens a mailto: link if user clicks "Open email client".
+   - Data is stored locally (localStorage) under key LP_FINAL_v2.
+*/
+
+const STORAGE_KEY = 'LP_FINAL_v2';
 const qs = (s, el=document) => el.querySelector(s);
-const qsa = (s, el=document) => Array.from(el.querySelectorAll(s));
+const qsa = (s, el=document) => Array.from((el||document).querySelectorAll(s));
 const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
-let state = { users: {}, currentUser: null, currentSection: null, editingTaskId: null };
+// Default sections and their predetermined tasks
+const defaultSections = {
+  'Personal': [
+    { title: 'Morning stretch', notes:'10 minutes of full-body stretch', points: 5, reward:'Feel energized' },
+    { title: 'Read 20 pages', notes:'Study or leisure reading', points: 8, reward:'Relax with tea' }
+  ],
+  'Home': [
+    { title: 'Do dishes', notes:'Wash and dry dishes', points: 3, reward:'Clean sink' },
+    { title: 'Sweep floor', notes:'Quick sweep', points: 3, reward:'Tidy kitchen' },
+    { title: 'Fold clothes', notes:'Fold laundry', points: 4, reward:'Neat closet' }
+  ],
+  'School': [
+    { title: 'Review notes', notes:'Revise today\'s lessons', points: 6, reward:'Better grades' },
+    { title: 'Start assignment', notes:'Begin current assignment', points: 10, reward:'Milestone progress' }
+  ],
+  'Work': [
+    { title: 'Email updates', notes:'Send daily updates', points: 5, reward:'Stay aligned' },
+    { title: 'Plan tomorrow', notes:'List 3 priorities', points: 4, reward:'Clear mind' }
+  ],
+  'Community': [
+    { title: 'Volunteer check', notes:'Plan volunteering', points: 6, reward:'Give back' }
+  ]
+};
+
+let state = { users: {}, currentUser: null, currentSection: 'Personal', editingTaskId: null, reminderQueue: [] };
 
 /* storage helpers */
 function load(){
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw){ state = { users:{}, currentUser:null, currentSection:null, editingTaskId:null }; return; }
+    if(!raw){ state = { users: {}, currentUser: null, currentSection: 'Personal', editingTaskId: null, reminderQueue: [] }; return; }
     state = JSON.parse(raw);
-    if(typeof state !== 'object' || !state.users) state = { users:{}, currentUser:null, currentSection:null, editingTaskId:null };
+    if(typeof state !== 'object' || !state.users) state = { users: {}, currentUser: null, currentSection: 'Personal', editingTaskId: null, reminderQueue: [] };
   } catch(e){
-    console.error('Bad localStorage JSON — clearing', e);
-    try{ localStorage.removeItem(STORAGE_KEY); }catch(err){}
-    state = { users:{}, currentUser:null, currentSection:null, editingTaskId:null };
+    console.error('Bad localStorage JSON — resetting', e);
+    localStorage.removeItem(STORAGE_KEY);
+    state = { users: {}, currentUser: null, currentSection: 'Personal', editingTaskId: null, reminderQueue: [] };
   }
 }
-function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.error('save failed', e); } }
-function ensureUserData(username){
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+/* ensure user structure and default tasks */
+function ensureUser(username,email){
   if(!username) return;
-  if(!state.users[username]){ state.users[username] = { password:'', sections:{} }; defaultSections.forEach(s=> state.users[username].sections[s]={tasks:[]}); }
-  else defaultSections.forEach(s=>{ if(!state.users[username].sections[s]) state.users[username].sections[s] = {tasks:[]}; });
+  if(!state.users[username]){
+    state.users[username] = {
+      password: '',
+      email: email || '',
+      theme: 'dark',
+      points: 0,
+      createdAt: Date.now(),
+      sections: {}
+    };
+    // add default sections & tasks
+    Object.keys(defaultSections).forEach(sec=>{
+      state.users[username].sections[sec] = { tasks: [] };
+      defaultSections[sec].forEach(t=>{
+        state.users[username].sections[sec].tasks.push({
+          id: uid(), title: t.title, notes: t.notes || '', points: t.points || 0, reward: t.reward || '',
+          due: null, createdAt: Date.now(), completed:false, completedAt:null, archived:false, status:'not', reminderBefore:86400000, emailReminder:false
+        });
+      });
+    });
+  } else {
+    // ensure all default sections exist
+    Object.keys(defaultSections).forEach(sec=>{ if(!state.users[username].sections[sec]) state.users[username].sections[sec] = { tasks: [] }; });
+  }
 }
 
-/* PARTICLES container reference (exists because script is at end) */
+/* PARTICLES (re-use your previous functions) */
 const particleContainer = document.getElementById('themeParticles');
+function rand(min, max){ return Math.random()*(max-min)+min; }
+function createParticlesForTheme(theme){
+  if(!particleContainer) return;
+  particleContainer.innerHTML = '';
+  if(theme === 'christmas') createSnow(28);
+  else if(theme === 'halloween') createHalloweenMix(18);
+}
+function createSnow(count){ for(let i=0;i<count;i++){ const sp=document.createElement('div');sp.className='particle snow';sp.textContent='❄';sp.style.left=rand(0,100)+'vw';sp.style.setProperty('--size',Math.round(rand(12,28))+'px');sp.style.setProperty('--dur',rand(6,16).toFixed(2)+'s');sp.style.setProperty('--delay',rand(0,8).toFixed(2)+'s');sp.style.setProperty('--xShift',Math.round(rand(-80,80))+'px');sp.style.opacity=(rand(0.5,0.95)).toFixed(2);particleContainer.appendChild(sp);} }
+function createHalloweenMix(count){ for(let i=0;i<count;i++){ const isBat=Math.random()<0.35;const sp=document.createElement('div');sp.className='particle '+(isBat?'bat':'pumpkin');sp.textContent=isBat?'🦇':'🎃';sp.style.left=rand(-10,90)+'vw';sp.style.top=rand(-20,5)+'vh';sp.style.setProperty('--size',Math.round(rand(18,42))+'px');sp.style.setProperty('--dur', (isBat?rand(6,14):rand(8,18)).toFixed(2)+'s');sp.style.setProperty('--delay',rand(0,6).toFixed(2)+'s');sp.style.setProperty('--xShift',Math.round(rand(-120,120))+'px');sp.style.opacity=(rand(0.6,0.98)).toFixed(2);particleContainer.appendChild(sp);} }
 
-/* THEME & PARTICLES */
+/* THEME */
+const GLOBAL_THEME_KEY = 'lp_global_theme_v1';
 function applyTheme(t){
   if(!t) t='dark';
   document.body.setAttribute('data-theme', t);
   const sel = qs('#themeSelect'); if(sel && sel.value !== t) sel.value = t;
   createParticlesForTheme(t);
 }
+function saveGlobalTheme(t){ try{ localStorage.setItem(GLOBAL_THEME_KEY,t);}catch(e){} }
 function restoreUserTheme(){
-  try {
-    load();
-    const u = state.currentUser;
-    if(u && state.users[u] && state.users[u].theme) {
-      applyTheme(state.users[u].theme);
-    } else {
-      applyTheme(localStorage.getItem(GLOBAL_THEME_KEY) || 'dark');
-    }
-  } catch(e){ applyTheme('dark'); }
-}
-function saveGlobalTheme(t){ try { localStorage.setItem(GLOBAL_THEME_KEY, t); } catch(e){ } }
-
-/* particles creation utilities */
-function rand(min, max){ return Math.random()*(max-min)+min; }
-function createParticlesForTheme(theme){
-  if(!particleContainer) return;
-  particleContainer.innerHTML = '';
-  if(theme === 'christmas') createSnow(36);
-  else if(theme === 'halloween') createHalloweenMix(18);
-}
-function createSnow(count){
-  for(let i=0;i<count;i++){
-    const sp = document.createElement('div');
-    sp.className = 'particle snow';
-    sp.textContent = '❄';
-    const left = rand(0,100);
-    const size = Math.round(rand(12,32));
-    const dur = rand(6,16).toFixed(2) + 's';
-    const delay = rand(0,8).toFixed(2) + 's';
-    const xShift = Math.round(rand(-80,80)) + 'px';
-    sp.style.left = left + 'vw';
-    sp.style.setProperty('--size', size + 'px');
-    sp.style.setProperty('--dur', dur);
-    sp.style.setProperty('--delay', delay);
-    sp.style.setProperty('--xShift', xShift);
-    sp.style.opacity = (rand(0.5,0.95)).toFixed(2);
-    particleContainer.appendChild(sp);
-  }
-}
-function createHalloweenMix(count){
-  for(let i=0;i<count;i++){
-    const isBat = Math.random() < 0.35;
-    const sp = document.createElement('div');
-    sp.className = 'particle ' + (isBat ? 'bat' : 'pumpkin');
-    sp.textContent = isBat ? '🦇' : '🎃';
-    const top = rand(-20,5);
-    const left = rand(-10,90);
-    const size = Math.round(rand(18,42));
-    const dur = (isBat ? rand(6,14) : rand(8,18)).toFixed(2) + 's';
-    const delay = rand(0,6).toFixed(2) + 's';
-    const xShift = Math.round(rand(-120,120)) + 'px';
-    sp.style.left = left + 'vw';
-    sp.style.top = top + 'vh';
-    sp.style.setProperty('--size', size + 'px');
-    sp.style.setProperty('--dur', dur);
-    sp.style.setProperty('--delay', delay);
-    sp.style.setProperty('--xShift', xShift);
-    sp.style.opacity = (rand(0.6,0.98)).toFixed(2);
-    particleContainer.appendChild(sp);
-  }
+  try{ load(); const u = state.currentUser; if(u && state.users[u] && state.users[u].theme) applyTheme(state.users[u].theme); else applyTheme(localStorage.getItem(GLOBAL_THEME_KEY) || 'dark'); }catch(e){ applyTheme('dark'); }
 }
 
-/* AUTH handlers */
-function handleCreate(){
-  const u = qs('#loginUser')?.value?.trim();
-  const p = qs('#loginPass')?.value || '';
+/* AUTH UI & handlers */
+function populateAccountList(){
+  const container = qs('#accountList'); if(!container) return; container.innerHTML = '';
+  const keys = Object.keys(state.users).sort((a,b)=> state.users[b].points - state.users[a].points);
+  if(keys.length === 0){ container.innerHTML = '<div class="muted">No accounts yet</div>'; return; }
+  keys.forEach(u=>{
+    const el = document.createElement('div');
+    el.style.display='flex'; el.style.justifyContent='space-between'; el.style.alignItems='center'; el.style.padding='8px 6px';
+    el.innerHTML = `<div style="min-width:0"><strong style="color:var(--accent)">${u}</strong><div class="muted" style="font-size:12px">${state.users[u].email || ''}</div></div><div style="text-align:right"><button class="small-btn pickUser" data-u="${u}">Pick</button></div>`;
+    container.appendChild(el);
+  });
+  qsa('.pickUser', container).forEach(b=> b.addEventListener('click', e=>{ const u=e.currentTarget.dataset.u; qs('#quickUser').value=u; qs('#quickPass').value = state.users[u].password || ''; }));
+}
+
+/* sign/create */
+function handleCreateConfirm(){
+  const u = qs('#createUser').value.trim();
+  const p = qs('#createPass').value;
+  const em = qs('#createEmail').value.trim();
   if(!u || !p){ alert('Enter username and password'); return; }
-  load(); ensureUserData(u); state.users[u].password = p; state.currentUser = u; state.currentSection = 'Personal';
-  const sel = qs('#themeSelect');
-  if(sel && sel.value) state.users[u].theme = state.users[u].theme || sel.value;
-  save(); showApp();
+  load(); ensureUser(u, em);
+  state.users[u].password = p;
+  state.users[u].email = em;
+  state.currentUser = u;
+  state.currentSection = 'Personal';
+  save();
+  showApp();
 }
-function handleSignIn(){
-  const u = qs('#loginUser')?.value?.trim(), p = qs('#loginPass')?.value || '';
+function handleQuickSignIn(){
+  const u = qs('#quickUser').value.trim();
+  const p = qs('#quickPass').value;
   load();
   if(!u || !state.users[u] || state.users[u].password !== p){ alert('Invalid user or password (create account if new)'); return; }
-  state.currentUser = u; state.currentSection = state.currentSection || 'Personal'; save(); showApp();
+  state.currentUser = u; state.currentSection = state.currentSection || 'Personal';
+  save();
+  showApp();
 }
 
-/* DOM ready */
-document.addEventListener('DOMContentLoaded', ()=>{
-  const createBtn = qs('#createBtn'), signInBtn = qs('#signInBtn'), signOutBtn = qs('#signOutBtn');
-  const themeSel = qs('#themeSelect');
-  if(createBtn) createBtn.addEventListener('click', handleCreate);
-  if(signInBtn) signInBtn.addEventListener('click', handleSignIn);
-  if(signOutBtn) signOutBtn.addEventListener('click', ()=> { load(); state.currentUser=null; save(); location.reload(); });
-
-  // show password
-  const showPass = qs('#showPass'), togglePwdBtn = qs('#togglePwdBtn'), pwdInput = qs('#loginPass');
-  function setPasswordVisibility(visible){
-    if(!pwdInput) return;
-    pwdInput.type = visible ? 'text' : 'password';
-    if(togglePwdBtn) togglePwdBtn.textContent = visible ? '🙈' : '👁️';
-  }
-  if(showPass) showPass.addEventListener('change', (e)=> setPasswordVisibility(e.target.checked));
-  if(togglePwdBtn) togglePwdBtn.addEventListener('click', (ev)=>{ ev.preventDefault(); const isVisible = pwdInput && pwdInput.type === 'text'; setPasswordVisibility(!isVisible); if(showPass) showPass.checked = !isVisible; });
-
-  // theme selector change
-  if(themeSel){
-    load();
-    const cu = state.currentUser;
-    if(cu && state.users[cu] && state.users[cu].theme) themeSel.value = state.users[cu].theme;
-    else themeSel.value = localStorage.getItem(GLOBAL_THEME_KEY) || 'dark';
-    themeSel.addEventListener('change', (e)=>{
-      const next = e.target.value;
-      applyTheme(next);
-      try {
-        if(state.currentUser && state.users[state.currentUser]){
-          state.users[state.currentUser].theme = next;
-          save();
-        } else {
-          saveGlobalTheme(next);
-        }
-      } catch(err){ console.warn('Could not persist theme', err); }
-    });
-  }
-
-  initApp();
-});
-
-/* App functions (modal fix included) */
-function initApp(){
-  load();
-  Object.keys(state.users || {}).forEach(u => defaultSections.forEach(s=>{ if(!state.users[u].sections[s]) state.users[u].sections[s] = {tasks:[]}; }));
-  if(state.currentUser && state.users[state.currentUser]) showApp();
-}
-
+/* render functions */
 function showApp(){
-  qs('#loginScreen').style.display = 'none'; qs('#appRoot').style.display = 'block';
+  qs('#authArea').style.display='none';
+  qs('#appRoot').style.display='block';
   restoreUserTheme();
-  renderAccount(); renderSections(); renderHomeTiles(); renderSectionView(); startTicker();
+  renderAccount();
+  renderSections();
+  renderHomeTiles();
+  renderSectionView();
+  startTicker();
+  renderLeaderboard();
+}
+function renderAccount(){
+  if(!state.currentUser) return;
+  qs('#accountName').textContent = state.currentUser;
+  qs('#userArea').innerHTML = `<div class="muted">${state.currentUser}</div>`;
+  qs('#userPoints').textContent = `Points: ${state.users[state.currentUser].points || 0}`;
+  qs('#pointsDisplay').textContent = `Points: ${state.users[state.currentUser].points || 0}`;
+  renderRankForUser();
+}
+function renderRankForUser(){
+  const list = Object.keys(state.users).map(u=>({u, points: state.users[u].points||0})).sort((a,b)=>b.points-a.points);
+  const idx = list.findIndex(x=>x.u === state.currentUser);
+  const rank = idx >= 0 ? idx+1 : '—';
+  qs('#userRank').textContent = `Rank: ${rank}`;
+  qs('#rankDisplay').textContent = `Rank: ${rank}`;
 }
 
-function renderAccount(){ if(!state.currentUser) return; qs('#accountName').textContent = state.currentUser; qs('#userArea').innerHTML = `<div class=muted>${state.currentUser}</div>`; }
-
+/* sections */
 function renderSections(){
-  const container = qs('#sectionList'); if(!container) return; container.innerHTML = '';
-  defaultSections.forEach(s=>{
-    const el = document.createElement('div'); el.className='nav-item'; el.dataset.section = s; el.innerHTML = `<div style="font-weight:700;color:var(--accent)">${s}</div>`;
-    el.addEventListener('click', ()=> { state.currentSection = s; save(); renderSectionView(); });
+  const container = qs('#sectionList'); if(!container) return;
+  container.innerHTML = '';
+  const secs = Object.keys(state.users[state.currentUser].sections || {});
+  secs.forEach(s=>{
+    const el = document.createElement('div');
+    el.className = 'section-chip' + (s === state.currentSection ? ' active' : '');
+    el.dataset.section = s;
+    const tasks = state.users[state.currentUser].sections[s].tasks || [];
+    const total = tasks.filter(t=>!t.archived).length;
+    const done = tasks.filter(t=>t.completed).length;
+    const percent = total? Math.round((done/total)*100):0;
+    el.innerHTML = `<div style="min-width:0"><div style="font-weight:700;color:var(--accent)">${s}</div><div class="muted" style="font-size:12px">${done}/${total} done • ${percent}%</div></div><div class="muted" style="font-size:12px">${state.users[state.currentUser].sections[s].tasks.length} items</div>`;
+    el.addEventListener('click', ()=>{ state.currentSection = s; save(); renderSectionView(); renderSections(); });
     container.appendChild(el);
   });
 }
 
-function renderHomeTiles(){ qsa('.tile').forEach(t=> t.addEventListener('click', ()=>{ state.currentSection = t.dataset.section; save(); renderSectionView(); })); }
+function renderHomeTiles(){ qsa('.tile').forEach(t=> t.addEventListener('click', ()=>{ state.currentSection = t.dataset.section; save(); renderSectionView(); renderSections(); })); }
 
-function renderSectionView(){
-  if(!state.currentUser) return;
-  qs('#homeTiles').style.display = 'none'; qs('#sectionView').style.display = 'block';
-  qs('#currentSectionTitle').textContent = state.currentSection;
-  renderTaskList(); renderHistoryList(); updateProgress(); updateNextTask();
+function getTasksForCurrentSection(){
+  try{
+    return state.users[state.currentUser].sections[state.currentSection].tasks || [];
+  }catch(e){ return []; }
 }
 
-function getTasks(){ const u = state.currentUser; return (state.users[u] && state.users[u].sections[state.currentSection] && state.users[u].sections[state.currentSection].tasks) || []; }
-
-function renderTaskList(filterText=''){
+function renderTaskList(filter=''){
   const list = qs('#taskList'); if(!list) return; list.innerHTML = '';
-  const tasks = getTasks().filter(t=>!t.archived && (!filterText || t.title.toLowerCase().includes(filterText.toLowerCase()))).sort((a,b)=> (a.due||0) - (b.due||0));
-  if(tasks.length===0){ list.innerHTML = '<div class="muted">No tasks. Click + New Task to add one.</div>'; return; }
+  const tasks = getTasksForCurrentSection().filter(t=>!t.archived && (!filter || t.title.toLowerCase().includes(filter.toLowerCase()))).sort((a,b)=> (a.due||0) - (b.due||0));
+  if(tasks.length === 0){ list.innerHTML = '<div class="muted">No tasks. Click + New Task to add one.</div>'; return; }
   tasks.forEach(t=>{
     const el = document.createElement('div'); el.className='task';
+    // left
     const left = document.createElement('div'); left.className='left';
     const cb = document.createElement('div'); cb.className = 'checkbox' + (t.completed? ' checked':''); cb.innerHTML = t.completed? '✔':'';
-    cb.addEventListener('click', ()=>{ t.completed = !t.completed; if(t.completed) t.completedAt = Date.now(); else t.completedAt = null; save(); renderTaskList(qs('#searchInput')?.value || ''); updateProgress(); updateNextTask(); });
-    const info = document.createElement('div'); info.innerHTML = `<div class="task-title">${escapeHtml(t.title)}</div><div class="task-meta">Due: ${t.due? new Date(t.due).toLocaleString():'—'} ${t.notes? ' • '+escapeHtml(t.notes):''}</div>`;
-    left.appendChild(cb); left.appendChild(info);
+    cb.addEventListener('click', ()=>{
+      // toggle done -> award points
+      if(!t.completed){
+        t.completed = true; t.completedAt = Date.now(); t.status = 'done';
+        // award points
+        const pts = Number(t.points) || 0;
+        state.users[state.currentUser].points = (state.users[state.currentUser].points || 0) + pts;
+        showEncouragement(pts, t);
+      } else {
+        // un-complete: revert points (simple approach)
+        t.completed = false; t.completedAt = null; if(t.status==='done'){
+          state.users[state.currentUser].points = Math.max(0, (state.users[state.currentUser].points||0) - (Number(t.points)||0));
+        }
+        t.status = 'not';
+      }
+      save(); renderTaskList(qs('#searchInput')?.value || ''); updateProgress(); renderAccount(); renderSections(); renderLeaderboard();
+    });
+
+    // status toggle (not / partial / done)
+    const statusBtn = document.createElement('select');
+    statusBtn.style.marginRight='8px';
+    statusBtn.innerHTML = `<option value="not">Not</option><option value="partial">Partial</option><option value="done">Done</option>`;
+    statusBtn.value = t.status || 'not';
+    statusBtn.addEventListener('change', (e)=>{
+      const val = e.target.value;
+      if(val === 'done' && !t.completed){
+        // from not -> done via partial UI
+        t.completed = true; t.completedAt = Date.now();
+        const pts = Number(t.points)||0;
+        state.users[state.currentUser].points = (state.users[state.currentUser].points||0) + pts;
+        showEncouragement(pts, t);
+      } else if(val === 'partial'){
+        // partial: award half points once
+        if(t.status !== 'partial'){
+          const half = Math.round((Number(t.points)||0)/2);
+          state.users[state.currentUser].points = (state.users[state.currentUser].points||0) + half;
+          showEncouragement(half, t, true);
+        }
+        t.completed = false;
+      } else if(val === 'not'){
+        // if previously awarded, we cannot easily revert partial tracking reliably here — keep simple: no revert for partial
+        t.completed = false;
+      }
+      t.status = val; save(); renderTaskList(qs('#searchInput')?.value || ''); updateProgress(); renderAccount(); renderLeaderboard();
+    });
+
+    const info = document.createElement('div');
+    info.style.minWidth='0';
+    info.innerHTML = `<div class="task-title">${escapeHtml(t.title)}</div>
+                      <div class="task-meta">${t.due? 'Due: '+new Date(t.due).toLocaleString() : 'No due date'} ${t.notes? ' • '+escapeHtml(t.notes):''}</div>
+                      <div class="muted" style="font-size:12px">Reward: ${escapeHtml(t.reward || '—')} • Points: ${t.points||0}</div>`;
+    left.appendChild(cb);
+    left.appendChild(statusBtn);
+    left.appendChild(info);
+
+    // actions
     const actions = document.createElement('div'); actions.className='task-actions';
-    const edit = document.createElement('button'); edit.className='small-btn'; edit.textContent='Edit'; edit.addEventListener('click', ()=> openModal(t.id));
-    const del = document.createElement('button'); del.className='small-btn'; del.textContent='Delete'; del.addEventListener('click', ()=>{ if(confirm('Delete this task?')){ t.archived = true; save(); renderTaskList(qs('#searchInput')?.value || ''); updateProgress(); renderHistoryList(); updateNextTask(); } });
-    actions.appendChild(edit); actions.appendChild(del);
+    const edit = document.createElement('button'); edit.className='small-btn'; edit.textContent='Edit';
+    edit.addEventListener('click', ()=> openModalForTask(t.id));
+    const del = document.createElement('button'); del.className='small-btn'; del.textContent='Delete';
+    del.addEventListener('click', ()=>{ if(confirm('Delete this task?')){ t.archived = true; save(); renderTaskList(qs('#searchInput')?.value || ''); updateProgress(); renderHistoryList(); renderSections(); renderLeaderboard(); }});
+    const remind = document.createElement('button'); remind.className='small-btn'; remind.textContent='Remind';
+    remind.addEventListener('click', ()=>{
+      if(!t.due){ alert('Set a due date first'); return; }
+      // schedule immediate reminder modal for testing
+      showReminderModal(t);
+    });
+
+    actions.appendChild(edit); actions.appendChild(del); actions.appendChild(remind);
     el.appendChild(left); el.appendChild(actions);
     list.appendChild(el);
   });
@@ -533,87 +631,311 @@ function renderTaskList(filterText=''){
 function renderHistoryList(){
   const hist = qs('#historyList'); if(!hist) return; hist.innerHTML = '';
   const tasksAll = (state.users[state.currentUser].sections[state.currentSection].tasks || []);
-  const histTasks = tasksAll.filter(t => (t.archived === true) || (t.completed === true) || (t.done === true));
+  const histTasks = tasksAll.filter(t => (t.archived === true) || (t.completed === true) || (t.status === 'partial'));
   if(histTasks.length === 0){ hist.innerHTML = '<div class="muted">No past tasks</div>'; return; }
   histTasks.sort((a,b)=>{ const ta = a.completedAt || a.createdAt || 0; const tb = b.completedAt || b.createdAt || 0; return tb - ta; }).slice(0,12).forEach(t=>{
     const d = document.createElement('div'); d.style.padding='8px 0';
     const when = (t.completedAt || t.createdAt) ? (t.completedAt ? `Completed: ${new Date(t.completedAt).toLocaleString()}` : `Created: ${new Date(t.createdAt).toLocaleString()}`) : '';
-    d.innerHTML = `<div style="font-weight:700;color:#fff">${escapeHtml(t.title)}</div><div class="muted" style="font-size:12px">${when}</div>`;
+    d.innerHTML = `<div style="font-weight:700;color:#fff">${escapeHtml(t.title)}</div><div class="muted" style="font-size:12px">${when} • Reward: ${escapeHtml(t.reward || '—')}</div>`;
     hist.appendChild(d);
   });
 }
 
 function updateProgress(){
   try{
-    const tasks = (state.users[state.currentUser].sections[state.currentSection].tasks || []).filter(t=>!t.archived);
-    const total = tasks.length, done = tasks.filter(t=>t.completed).length;
-    const percent = total? Math.round((done/total)*100):0;
+    const tasks = getTasksForCurrentSection().filter(t=>!t.archived);
+    const total = tasks.length;
+    const doneCount = tasks.filter(t=>t.completed).length;
+    // partial counts as half
+    const partialCount = tasks.filter(t=>t.status==='partial').length;
+    const effectiveDone = doneCount + partialCount*0.5;
+    const percent = total? Math.round((effectiveDone/total)*100):0;
     if(qs('#progressBar')) qs('#progressBar').style.width = percent + '%';
-    if(qs('#progressText')) qs('#progressText').textContent = `${done} of ${total} tasks completed (${percent}%)`;
-  } catch(e){ console.error('updateProgress error', e); }
+    if(qs('#progressText')) qs('#progressText').textContent = `${Math.round(effectiveDone*100)/100} of ${total} tasks completed (${percent}%)`;
+  }catch(e){ console.error('updateProgress error', e); }
 }
 
-let ticker = null;
-function getNextTask(){ try{ const tasks = (state.users[state.currentUser].sections[state.currentSection].tasks || []).filter(t=>!t.completed && !t.archived && t.due).sort((a,b)=> a.due - b.due); return tasks[0] || null; }catch(e){return null;} }
-function updateNextTask(){ const nt = getNextTask(); if(!nt){ if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = 'Next task: —'; return; } if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = `Next: ${nt.title} — due ${new Date(nt.due).toLocaleString()}`; }
-function startTicker(){ if(ticker) clearInterval(ticker); ticker = setInterval(()=>{ const nt = getNextTask(); if(!nt){ if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = 'Next task: —'; return; } const rem = nt.due - Date.now(); if(rem<=0){ if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = `Next: ${nt.title} — due now!`; return; } const h = Math.floor(rem/3600000); const m = Math.floor((rem%3600000)/60000); const s = Math.floor((rem%60000)/1000); if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = `Next: ${nt.title} — ${h}h ${m}m ${s}s left (due ${new Date(nt.due).toLocaleString()})`; },1000); }
+function updateNextTask(){
+  const tasks = getTasksForCurrentSection().filter(t=>!t.completed && !t.archived && t.due).sort((a,b)=> a.due - b.due);
+  const nt = tasks[0] || null;
+  if(!nt){ if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = 'Next task: —'; return; }
+  if(qs('#nextTaskBar')) qs('#nextTaskBar').textContent = `Next: ${nt.title} — due ${new Date(nt.due).toLocaleString()}`;
+}
 
+/* encouragement */
+const encouragements = [
+  "Nice! Keep going — little wins add up.",
+  "Great job! Earn more points by completing another task.",
+  "You're on a roll — don't stop now!",
+  "Fantastic — consistent progress builds momentum.",
+  "Way to go! Reward yourself (you earned it)."
+];
+function showEncouragement(pts, task, partial=false){
+  const msg = (partial? "Nice progress!" : "Well done!") + ` +${pts} points for "${task.title}".`;
+  const rotate = encouragements[Math.floor(Math.random()*encouragements.length)];
+  if(qs('#encourageMsg')) qs('#encourageMsg').textContent = msg + ' ' + rotate;
+  // small visual feedback (could add confetti)
+  setTimeout(()=>{ if(qs('#encourageMsg')) qs('#encourageMsg').textContent = ''; }, 6500);
+}
+
+/* modal open/close for task create/edit */
 const modal = qs('#modal');
-function openModal(taskId){
+function openModalForTask(taskId){
   state.editingTaskId = taskId || null;
-
-  // ensure modal is directly under body so it isn't trapped by stacking contexts
   const modalEl = document.getElementById('modal');
-  if (modalEl && modalEl.parentElement !== document.body) {
-    document.body.appendChild(modalEl);
-  }
-
+  if (modalEl && modalEl.parentElement !== document.body) document.body.appendChild(modalEl);
   if(taskId){
-    const t = state.users[state.currentUser].sections[state.currentSection].tasks.find(x=>x.id===taskId);
+    const t = getTasksForCurrentSection().find(x=>x.id===taskId);
     if(t){
       qs('#modalTitle').textContent = 'Edit Task';
       qs('#taskTitle').value = t.title;
       qs('#taskNotes').value = t.notes || '';
+      qs('#taskReward').value = t.reward || '';
+      qs('#taskPoints').value = t.points || '';
       qs('#taskDue').value = t.due? toDatetimeLocal(new Date(t.due)) : '';
+      qs('#taskEmailRem').checked = !!t.emailReminder;
+      qs('#reminderBefore').value = t.reminderBefore || '86400000';
     }
   } else {
     qs('#modalTitle').textContent = 'New Task';
-    if(qs('#taskTitle')) qs('#taskTitle').value='';
-    if(qs('#taskNotes')) qs('#taskNotes').value='';
-    if(qs('#taskDue')) qs('#taskDue').value='';
+    qs('#taskTitle').value=''; qs('#taskNotes').value=''; qs('#taskReward').value=''; qs('#taskPoints').value=''; qs('#taskDue').value=''; qs('#taskEmailRem').checked=false; qs('#reminderBefore').value='86400000';
   }
-
-  if(modalEl){
-    modalEl.style.zIndex = 9999;
-    modalEl.classList.add('open');
-    modalEl.setAttribute('aria-hidden','false');
-  }
+  if(modalEl){ modalEl.style.zIndex = 9999; modalEl.classList.add('open'); modalEl.setAttribute('aria-hidden','false'); }
 }
 function closeModal(){ if(modal) modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); state.editingTaskId = null; }
 
-document.addEventListener('DOMContentLoaded', ()=>{
-  if(qs('#addTaskBtn')) qs('#addTaskBtn').addEventListener('click', ()=> openModal());
-  if(qs('#cancelBtn')) qs('#cancelBtn').addEventListener('click', ()=> closeModal());
-  if(qs('#saveTaskBtn')) qs('#saveTaskBtn').addEventListener('click', ()=>{
-    const title = qs('#taskTitle').value.trim(); if(!title){ alert('Enter title'); return; }
-    const notes = qs('#taskNotes').value.trim(); const dueVal = qs('#taskDue').value; const due = dueVal? new Date(dueVal).getTime(): null;
-    const tasks = state.users[state.currentUser].sections[state.currentSection].tasks;
-    if(state.editingTaskId){ const t = tasks.find(x=>x.id===state.editingTaskId); if(t){ t.title = title; t.notes = notes; t.due = due; t.archived = false; } }
-    else { tasks.push({ id: uid(), title, notes, due, createdAt: Date.now(), completed:false, completedAt:null, archived:false }); }
-    save(); closeModal(); renderTaskList(qs('#searchInput')?.value || ''); updateProgress(); updateNextTask(); renderHistoryList();
-  });
-  if(qs('#searchInput')) qs('#searchInput').addEventListener('input', (e)=> renderTaskList(e.target.value));
-});
+/* Save task from modal */
+function saveTaskFromModal(){
+  const title = qs('#taskTitle').value.trim(); if(!title){ alert('Enter title'); return; }
+  const notes = qs('#taskNotes').value.trim(); const reward = qs('#taskReward').value.trim(); const points = Number(qs('#taskPoints').value) || 0;
+  const dueVal = qs('#taskDue').value; const due = dueVal? new Date(dueVal).getTime(): null;
+  const emailRem = !!qs('#taskEmailRem').checked;
+  const reminderBefore = Number(qs('#reminderBefore').value) || 86400000;
+
+  const tasks = state.users[state.currentUser].sections[state.currentSection].tasks;
+  if(state.editingTaskId){
+    const t = tasks.find(x=>x.id===state.editingTaskId);
+    if(t){ t.title = title; t.notes = notes; t.reward = reward; t.points = points; t.due = due; t.emailReminder = emailRem; t.reminderBefore = reminderBefore; t.archived = false; }
+  } else {
+    tasks.push({ id: uid(), title, notes, reward, points, due, createdAt: Date.now(), completed:false, completedAt:null, archived:false, status:'not', emailReminder, reminderBefore });
+  }
+  save(); closeModal(); renderTaskList(qs('#searchInput')?.value || ''); updateProgress(); updateNextTask(); renderHistoryList(); renderSections(); renderLeaderboard();
+}
 
 /* utilities */
 function toDatetimeLocal(date){ const off = date.getTimezoneOffset(); const d = new Date(date.getTime() - off*60*1000); return d.toISOString().slice(0,16); }
 function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, (c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
 
-/* startup */
-load();
-Object.keys(state.users || {}).forEach(u=>{ defaultSections.forEach(s=>{ if(!state.users[u].sections[s]) state.users[u].sections[s] = {tasks:[]}; }); });
+/* ticker for next task & reminders */
+let ticker = null;
+function startTicker(){
+  if(ticker) clearInterval(ticker);
+  ticker = setInterval(()=>{ updateNextTask(); checkReminders(); }, 1000);
+}
 
-// initialize theme selection and particles
+/* Reminder system:
+   - For tasks with emailReminder=true and a due date, compute triggerTime = due - reminderBefore
+   - Keep reminderQueue in memory (and persisted) as {user, section, taskId, triggerTime, triggered}
+   - When triggerTime <= now and not triggered, show modal prompting to open email client with mailto: prefilled.
+*/
+function rebuildReminderQueue(){
+  state.reminderQueue = state.reminderQueue || [];
+  // clear expired entries of other users/tasks that don't exist
+  const newQ = [];
+  Object.keys(state.users).forEach(u=>{
+    Object.keys(state.users[u].sections || {}).forEach(sec=>{
+      (state.users[u].sections[sec].tasks || []).forEach(t=>{
+        if(t.emailReminder && t.due){
+          const trig = (t.due - (t.reminderBefore || 86400000));
+          const exists = state.reminderQueue.some(r => r.user === u && r.section === sec && r.taskId === t.id);
+          if(!exists){
+            newQ.push({ user: u, section: sec, taskId: t.id, triggerTime: trig, triggered: false });
+          }
+        }
+      });
+    });
+  });
+  // merge with existing queue but keep triggered flags, then dedupe
+  const existing = state.reminderQueue || [];
+  const merged = [...existing];
+  newQ.forEach(n => {
+    const found = merged.find(m => m.user===n.user && m.section===n.section && m.taskId===n.taskId);
+    if(!found) merged.push(n);
+  });
+  state.reminderQueue = merged;
+  save();
+}
+function checkReminders(){
+  const now = Date.now();
+  state.reminderQueue = state.reminderQueue || [];
+  for(const r of state.reminderQueue){
+    if(r.triggered) continue;
+    if(r.triggerTime <= now){
+      // mark triggered
+      r.triggered = true;
+      save();
+      // if reminder is for current user, show modal
+      if(r.user === state.currentUser){
+        const t = state.users[r.user].sections[r.section].tasks.find(x=>x.id === r.taskId);
+        if(t) showReminderModal(t);
+      } else {
+        // otherwise, we'll silently mark as triggered; optionally we could show a small toast for other-session reminders
+        console.log('Reminder triggered for other user', r.user, r.taskId);
+      }
+    }
+  }
+}
+
+/* show reminder modal for a task (current user) */
+const reminderModal = qs('#reminderModal');
+function showReminderModal(task){
+  const body = qs('#reminderBody');
+  body.innerHTML = `<div><strong>${escapeHtml(task.title)}</strong></div>
+                    <div class="muted" style="margin-top:6px">${task.notes ? escapeHtml(task.notes) : ''}</div>
+                    <div style="margin-top:8px" class="muted">Due: ${task.due ? new Date(task.due).toLocaleString() : '—'}</div>`;
+  // attach actions
+  qs('#sendReminderEmail').onclick = ()=> {
+    const user = state.users[state.currentUser];
+    const email = user.email || '';
+    const subject = encodeURIComponent(`Reminder: "${task.title}" is due soon`);
+    const bodyText = encodeURIComponent(`Hi,\n\nThis is a reminder that "${task.title}" is due on ${task.due ? new Date(task.due).toLocaleString() : 'soon'}.\n\nNotes: ${task.notes || '-'}\n\nReward: ${task.reward || '-'}\n\n(Generated by Life Productivity app)`);
+    if(!email){
+      // open mailto without recipient
+      window.location.href = `mailto:?subject=${subject}&body=${bodyText}`;
+    } else {
+      // open user's mail client
+      window.location.href = `mailto:${encodeURIComponent(email)}?subject=${subject}&body=${bodyText}`;
+    }
+    closeReminderModal();
+  };
+  qs('#dismissReminder').onclick = ()=> closeReminderModal();
+  if(reminderModal && reminderModal.parentElement !== document.body) document.body.appendChild(reminderModal);
+  reminderModal.classList.add('open'); reminderModal.setAttribute('aria-hidden','false');
+}
+function closeReminderModal(){ reminderModal.classList.remove('open'); reminderModal.setAttribute('aria-hidden','true'); }
+
+/* Leaderboard */
+function renderLeaderboard(){
+  const container = qs('#leaderboard'); if(!container) return; container.innerHTML = '';
+  const users = Object.keys(state.users).map(u=>({u, points: state.users[u].points || 0})).sort((a,b)=>b.points - a.points).slice(0,8);
+  users.forEach((it, idx)=>{
+    const el = document.createElement('div'); el.style.padding='6px 0'; el.innerHTML = `<div style="display:flex;justify-content:space-between"><div style="min-width:0"><strong style="color:var(--accent)">${idx+1}. ${escapeHtml(it.u)}</strong><div class="muted" style="font-size:12px">Points: ${it.points}</div></div><div class="muted" style="font-size:12px">${it.u === state.currentUser ? 'You' : ''}</div></div>`;
+    container.appendChild(el);
+  });
+}
+
+/* Users manual */
+function openManual(){
+  const html = `
+    <h3 style="margin-top:0;color:var(--accent)">User manual — Quick guide</h3>
+    <div class="muted" style="margin-top:8px">
+      <strong>Accounts:</strong> Create or sign in. Data is stored in your browser only.<br><br>
+      <strong>Sections & Tasks:</strong> Choose a section in the right column or use the tiles. Add tasks using + New Task.<br><br>
+      <strong>Rewards & Points:</strong> Each task has "points" and a "reward". Completing tasks awards points (partial awards half). Leaderboard ranks local users.<br><br>
+      <strong>Email reminders:</strong> When you enable "Email reminder" and set a due date + reminder time, the app will open your mail client at the reminder time with a pre-filled message. A backend is required to send emails automatically — this app only prepares the mail for you.<br><br>
+      <strong>History:</strong> See past tasks for each section in Task history.<br><br>
+      Enjoy — be consistent!
+    </div>`;
+  // reuse modal element
+  const m = document.getElementById('modal');
+  const oldTitle = qs('#modalTitle');
+  // temporarily show manual in the modal
+  if(m && m.parentElement !== document.body) document.body.appendChild(m);
+  qs('#modalTitle').textContent = 'User manual';
+  const bodyWrap = qs('#taskNotes').parentElement; // quick target to inject manual content below header
+  // Build custom manual content in modal-card
+  const card = m.querySelector('.modal-card');
+  card.innerHTML = `<div style="padding:18px">${html}<div style="display:flex;justify-content:flex-end;margin-top:12px"><button id="closeManual" class="btn">Close</button></div></div>`;
+  m.classList.add('open'); m.setAttribute('aria-hidden','false');
+  qs('#closeManual').addEventListener('click', ()=>{ m.classList.remove('open'); m.setAttribute('aria-hidden','true'); location.reload(); });
+}
+
+/* init & event wiring */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // wire auth buttons
+  qs('#openCreate').addEventListener('click', ()=> { qs('#createUser').value=''; qs('#createEmail').value=''; qs('#createPass').value=''; document.querySelector('.auth-right').scrollIntoView({behavior:'smooth'}); });
+  qs('#createConfirm').addEventListener('click', handleCreateConfirm);
+  qs('#createCancel').addEventListener('click', ()=> { qs('#createUser').value=''; qs('#createEmail').value=''; qs('#createPass').value=''; });
+  qs('#quickSignIn').addEventListener('click', handleQuickSignIn);
+  qs('#quickUser').addEventListener('keydown', (e)=>{ if(e.key==='Enter') handleQuickSignIn(); });
+  qs('#quickPass').addEventListener('keydown', (e)=>{ if(e.key==='Enter') handleQuickSignIn(); });
+
+  // after load, populate accounts
+  load();
+  populateAccountList();
+
+  // auth UI state (if user exists in state.currentUser)
+  if(state.currentUser && state.users[state.currentUser]) showApp();
+
+  // theme selector
+  const themeSel = qs('#themeSelect');
+  if(themeSel){
+    themeSel.addEventListener('change', (e)=>{ const next = e.target.value; applyTheme(next); try{ if(state.currentUser && state.users[state.currentUser]){ state.users[state.currentUser].theme = next; save(); } else saveGlobalTheme(next); }catch(err){ console.warn(err); } });
+    // set initial theme from storage
+    const cu = state.currentUser; if(cu && state.users[cu] && state.users[cu].theme) themeSel.value = state.users[cu].theme; else themeSel.value = localStorage.getItem(GLOBAL_THEME_KEY) || 'dark';
+    applyTheme(themeSel.value);
+  }
+
+  // sign out
+  qs('#signOutBtn').addEventListener('click', ()=> { load(); state.currentUser=null; save(); location.reload(); });
+
+  // add task button
+  qs('#addTaskBtn').addEventListener('click', ()=> openModalForTask());
+
+  // modal actions
+  qs('#cancelBtn').addEventListener('click', ()=> closeModal());
+  qs('#saveTaskBtn').addEventListener('click', ()=> saveTaskFromModal());
+
+  // search
+  qs('#searchInput').addEventListener('input', (e)=> renderTaskList(e.target.value));
+
+  // manual
+  qs('#manualBtn').addEventListener('click', openManual);
+
+  // home tiles
+  renderHomeTiles();
+
+  // persist remqueue on start
+  rebuildReminderQueue();
+
+  // initial rendering if signed in earlier
+  if(state.currentUser){
+    renderAccount(); renderSections(); renderSectionView(); startTicker();
+  }
+
+  // quick wiring for account picking on auth area
+  populateAccountList();
+});
+
+/* render section view wrapper */
+function renderSectionView(){
+  if(!state.currentUser) return;
+  qs('#currentSectionTitle').textContent = state.currentSection;
+  renderTaskList(qs('#searchInput')?.value || '');
+  renderHistoryList();
+  updateProgress();
+  updateNextTask();
+  renderAccount();
+  renderSections();
+  rebuildReminderQueue();
+}
+
+/* modal reposition guard (avoid stacking context trap) */
+document.addEventListener('DOMContentLoaded', ()=>{
+  const modalEl = document.getElementById('modal');
+  if(modalEl && modalEl.parentElement !== document.body) document.body.appendChild(modalEl);
+  const reminderEl = document.getElementById('reminderModal');
+  if(reminderEl && reminderEl.parentElement !== document.body) document.body.appendChild(reminderEl);
+});
+
+/* leaderboard refresh helper */
+function renderLeaderboardAtInterval(){ renderLeaderboard(); }
+setInterval(renderLeaderboardAtInterval, 8000);
+
+/* initial load */
+load();
+Object.keys(state.users || {}).forEach(u=>{ Object.keys(defaultSections).forEach(s=>{ if(!state.users[u].sections[s]) state.users[u].sections[s] = { tasks: [] }; }); });
+
 (function initTheme(){
   const sel = qs('#themeSelect');
   if(!sel) return;
@@ -624,8 +946,13 @@ Object.keys(state.users || {}).forEach(u=>{ defaultSections.forEach(s=>{ if(!sta
   applyTheme(sel.value);
 })();
 
-if(state.currentUser && state.users[state.currentUser]) showApp();
-window.addEventListener('beforeunload', ()=> save());
+/* expose a quick function to render leaderboard after points change */
+function renderLeaderboard(){ const container = qs('#leaderboard'); if(!container) return; container.innerHTML=''; const users = Object.keys(state.users).map(u=>({u, points: state.users[u].points||0})).sort((a,b)=>b.points-a.points).slice(0,8); users.forEach((it, idx)=>{ const el=document.createElement('div'); el.style.padding='6px 0'; el.innerHTML=`<div style="display:flex;justify-content:space-between"><div style="min-width:0"><strong style="color:var(--accent)">${idx+1}. ${escapeHtml(it.u)}</strong><div class="muted" style="font-size:12px">Points: ${it.points}</div></div><div class="muted" style="font-size:12px">${it.u === state.currentUser ? 'You' : ''}</div></div>`; container.appendChild(el); }); }
+
+/* expose for debugging */
+window.lp_state = state;
+window.lp_save = save;
+
 </script>
 </body>
 </html>
