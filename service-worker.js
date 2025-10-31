@@ -1,25 +1,25 @@
-const CACHE_NAME = "tasklist-f-v1";
-const urlsToCache = [
-  "./",
-  "./index.html",
-  "./style.css",
-  "./script.js"
+const CACHE_NAME = 'tasklist-cache-v1';
+const FILES_TO_CACHE = [
+  '/',
+  '/index.html',
+  '/style.css',
+  '/script.js',
+  '/manifest.json'
 ];
 
-// Install service worker and cache files
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache);
-    })
+self.addEventListener('install', (evt) => {
+  evt.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
   );
+  self.skipWaiting();
 });
 
-// Fetch cached content when offline
-self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+self.addEventListener('activate', (evt) => {
+  evt.waitUntil(self.clients.claim());
+});
+
+self.addEventListener('fetch', (evt) => {
+  evt.respondWith(
+    caches.match(evt.request).then(cached => cached || fetch(evt.request))
   );
 });
