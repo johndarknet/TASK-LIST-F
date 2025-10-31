@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Life Productivity — Fixed layout & Save</title>
+<title>Life Productivity — To-Do</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
   /* Basic reset & fonts */
   html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Helvetica;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
   body{background:#0f1724;color:#94a3b8;display:flex;align-items:flex-start;justify-content:center;padding:18px;box-sizing:border-box;overflow-x:hidden}
 
-  :root{--card:#0b1320;--accent:#6ee7b7;--muted:#94a3b8;--glass:rgba(255,255,255,0.04);--success:#2dd4bf}
+  :root{--card:#0b1320;--accent:#6ee7b7;--muted:#94a3b8;--glass:rgba(255,255,255,0.04);--danger:#ff6b6b;--success:#2dd4bf}
   [data-theme="light"]{background:#f5f7fb;color:#6b7280}
 
   /* Particle layer (non-interactive) */
@@ -58,6 +58,18 @@
   .modal.open{display:flex}
   .modal .modal-card{width:100%;max-width:680px;margin:12px;max-height:90vh;overflow:auto}
 
+  /* Auth area improvements */
+  .auth-wrap { display:block; }
+  .auth-card-inner { display:flex; gap:18px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+  .auth-left { flex: 1 1 540px; min-width:260px; max-width:760px; }
+  .auth-left .field { margin-bottom:10px; }
+  .auth-left .pw-row { display:flex; gap:8px; align-items:center; }
+  .auth-left .pw-row input[type="password"]{ flex:1; min-width:0; }
+  #quickSignIn { flex: 0 0 auto; }
+  .auth-right { flex: 0 0 260px; min-width:200px; display:flex; flex-direction:column; gap:8px; }
+  #accountList { margin-top:8px; display:flex; flex-direction:column; gap:6px; }
+  @media (max-width:760px){ .auth-card-inner { flex-direction:column; align-items:stretch; } .auth-right { width:100%; flex:1 1 auto; } .auth-left { max-width:100%; } }
+
   /* responsive */
   @media(max-width:980px){ .layout{grid-template-columns:1fr 300px} .tiles{grid-template-columns:repeat(2,1fr)} }
   @media(max-width:760px){ .layout{grid-template-columns:1fr} nav.side{position:relative} .tiles{grid-template-columns:1fr} .app{width:calc(100vw - 24px)} }
@@ -65,12 +77,14 @@
   /* helpful small styles */
   .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);font-size:13px}
   .section-card{padding:10px;border-radius:10px;margin-bottom:8px;cursor:pointer;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+  /* small input styles to keep consistent look */
+  input[type=text],input[type=password],input[type=email],input[type=datetime-local],select{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
 </style>
 </head>
 <body data-theme="dark">
   <div id="themeParticles" aria-hidden="true"></div>
 
-  <div class="app" role="application" id="app">
+  <div class="app" role="application">
     <header>
       <div style="display:flex;gap:12px;align-items:center">
         <div class="logo">LP</div>
@@ -98,22 +112,37 @@
       </div>
     </header>
 
-    <!-- Auth (keeps simple) -->
-    <div id="authArea" class="card" style="margin-bottom:16px">
-      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-        <div style="flex:1;min-width:220px">
-          <input id="quickUser" placeholder="username" style="width:100%;padding:10px;border-radius:8px;margin-bottom:8px" />
-          <input id="quickPass" placeholder="password" type="password" style="width:100%;padding:10px;border-radius:8px" />
+    <!-- AUTH -->
+    <div id="authArea" class="card auth-wrap" style="margin-bottom:16px">
+      <div class="auth-card-inner">
+        <!-- LEFT: username + password (with inline Sign in) -->
+        <div class="auth-left">
+          <div class="field">
+            <input id="quickUser" placeholder="username" />
+          </div>
+          <div class="field pw-row">
+            <input id="quickPass" placeholder="password" type="password" />
+            <button id="quickSignIn" class="btn">Sign in</button>
+          </div>
+          <div id="accountList" class="muted" style="font-size:13px">No accounts</div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button id="quickSignIn" class="btn">Sign in</button>
-          <button id="openCreate" class="btn ghost">Create</button>
-          <div id="accountList" class="muted" style="font-size:13px;margin-left:8px"></div>
+
+        <!-- RIGHT: Create / Info -->
+        <div class="auth-right card" style="padding:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:700;color:var(--accent)">New here?</div>
+            <div class="muted" style="font-size:12px">Create account</div>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-direction:column;margin-top:6px">
+            <button id="openCreate" class="btn">Create</button>
+            <div class="muted" style="font-size:13px">Create an account to keep tasks across sessions on this browser.</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Main app -->
+    <!-- APP -->
     <div id="appRoot" style="display:none">
       <div class="layout">
         <main class="main-area">
@@ -124,7 +153,7 @@
                 <div id="nextTaskBar" class="muted" style="margin-top:6px">Next task: —</div>
               </div>
               <div style="display:flex;gap:8px;align-items:center">
-                <input id="searchInput" placeholder="Search tasks..." style="padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit">
+                <input id="searchInput" placeholder="Search tasks..." style="min-width:160px">
                 <button id="addTaskBtn" class="btn">+ New Task</button>
                 <button id="manualBtn" class="small-btn">User manual</button>
                 <button id="signOutBtn" class="small-btn">Sign out</button>
@@ -216,11 +245,11 @@
   <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-card card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <h3 id="modalTitle" style="margin-top:0;color:var(--accent)">New Task</h3>
-      <div class="form-row"><label>Title</label><input id="taskTitle" style="width:100%;padding:10px;border-radius:8px"></div>
-      <div class="form-row"><label>Notes</label><input id="taskNotes" style="width:100%;padding:10px;border-radius:8px"></div>
-      <div class="form-row"><label>Reward (describe)</label><input id="taskReward" style="width:100%;padding:10px;border-radius:8px" placeholder="e.g. 10 points or watch 30m show"></div>
-      <div class="form-row"><label>Points awarded (numeric)</label><input id="taskPoints" type="number" style="width:100%;padding:10px;border-radius:8px" placeholder="e.g. 10"></div>
-      <div class="form-row"><label>Due date & time (optional)</label><input id="taskDue" type="datetime-local" style="width:100%;padding:10px;border-radius:8px"></div>
+      <div class="form-row"><label>Title</label><input id="taskTitle" type="text" style="width:100%"></div>
+      <div class="form-row"><label>Notes</label><input id="taskNotes" type="text" style="width:100%"></div>
+      <div class="form-row"><label>Reward (describe)</label><input id="taskReward" type="text" style="width:100%" placeholder="e.g. 10 points or watch 30m show"></div>
+      <div class="form-row"><label>Points awarded (numeric)</label><input id="taskPoints" type="number" style="width:100%" placeholder="e.g. 10"></div>
+      <div class="form-row"><label>Due date & time (optional)</label><input id="taskDue" type="datetime-local" style="width:100%"></div>
       <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
         <label style="font-size:13px"><input id="taskEmailRem" type="checkbox"> Email reminder (opens mail client)</label>
         <label style="font-size:13px;margin-left:6px">Reminder before:
@@ -235,8 +264,9 @@
   </div>
 
 <script>
-/* Updated app logic: layout fixes + direct binding for Save & Add */
-const STORAGE_KEY = 'LP_FIXED_LAYOUT_SAVE_V2';
+/* Single-file app logic: local-only storage, task CRUD, reminders (mailto), and layout fixes */
+
+const STORAGE_KEY = 'LP_FULL_APP_V1';
 const qs = (s, el=document) => el.querySelector(s);
 const qsa = (s, el=document) => Array.from((el||document).querySelectorAll(s));
 const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -267,29 +297,31 @@ function ensureUser(u, email){
   }
 }
 
-/* Theme/particles (kept minimal) */
+/* Theme (minimal) */
 const particleContainer = document.getElementById('themeParticles');
-function applyTheme(t){ if(!t) t='dark'; document.body.setAttribute('data-theme', t); if(t==='christmas'){ particleContainer.innerHTML=''; for(let i=0;i<28;i++){ const sp=document.createElement('div'); sp.className='particle'; sp.textContent='❄'; sp.style.left = (Math.random()*100)+'vw'; sp.style.top = (Math.random()*-10)+'vh'; sp.style.opacity = 0.7; particleContainer.appendChild(sp); } } else particleContainer.innerHTML=''; }
+function applyTheme(t){ if(!t) t='dark'; document.body.setAttribute('data-theme', t); if(t==='christmas'){ particleContainer.innerHTML=''; for(let i=0;i<28;i++){ const sp=document.createElement('div'); sp.className='particle'; sp.textContent='❄'; sp.style.left=(Math.random()*100)+'vw'; sp.style.top=(Math.random()*-10)+'vh'; sp.style.opacity=0.7; particleContainer.appendChild(sp);} } else particleContainer.innerHTML=''; }
 (function initTheme(){ const stored = localStorage.getItem('lp_global_theme_v1') || 'dark'; applyTheme(stored); })();
 
-/* UI wiring */
+/* UI helpers */
 function showAuth(){ qs('#authArea').style.display='block'; qs('#appRoot').style.display='none'; populateAccountList(); }
 function showApp(){ qs('#authArea').style.display='none'; qs('#appRoot').style.display='block'; applyTheme(state.currentUser && state.users[state.currentUser] ? state.users[state.currentUser].theme : localStorage.getItem('lp_global_theme_v1') || 'dark'); renderAccount(); renderSections(); renderHomeTiles(); renderSectionView(); startTicker(); renderLeaderboard(); }
 
+/* Accounts UI */
 function populateAccountList(){ const c = qs('#accountList'); if(!c) return; c.innerHTML=''; const names = Object.keys(state.users); if(!names.length){ c.innerHTML = '<span class="muted">No accounts</span>'; return; } names.forEach(n=>{ const b = document.createElement('button'); b.className='small-btn'; b.textContent = n; b.dataset.u = n; b.addEventListener('click', ()=>{ qs('#quickUser').value = n; qs('#quickPass').value = state.users[n].password || ''; }); c.appendChild(b); }); }
 
 function createAccount(u,p,email){ if(!u||!p){ alert('Enter username and password'); return; } load(); ensureUser(u,email); state.users[u].password = p; state.users[u].email = email || ''; state.currentUser = u; state.currentSection = 'Home'; save(); showApp(); }
 function signIn(u,p){ load(); if(!u || !state.users[u] || state.users[u].password !== p){ alert('Invalid user or password (create account if new)'); return; } state.currentUser = u; state.currentSection = state.currentSection || 'Home'; save(); showApp(); }
 
-/* Render helpers */
+/* Render functions */
 function renderAccount(){ if(!state.currentUser) return; qs('#accountName').textContent = state.currentUser; qs('#userPoints').textContent = `Points: ${state.users[state.currentUser].points||0}`; qs('#pointsDisplay').textContent = `Points: ${state.users[state.currentUser].points||0}`; renderRankForUser(); }
 function renderRankForUser(){ const list = Object.keys(state.users).map(u=>({u,points: state.users[u].points||0})).sort((a,b)=>b.points-a.points); const idx = list.findIndex(x=>x.u===state.currentUser); const r = idx>=0?idx+1:'—'; qs('#userRank').textContent = `Rank: ${r}`; qs('#rankDisplay').textContent = `Rank: ${r}`; }
 
-function renderSections(){ const container = qs('#sectionList'); if(!container) return; container.innerHTML=''; const secs = Object.keys(state.users[state.currentUser].sections || {}); secs.forEach(s=>{ const tasks = (state.users[state.currentUser].sections[s].tasks||[]); const total = tasks.filter(t=>!t.archived).length; const done = tasks.filter(t=>t.completed).length; const pct = total?Math.round((done/total)*100):0; const el = document.createElement('div'); el.className='section-card card'; el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong style="color:var(--accent)">${s}</strong><div class="muted" style="font-size:12px">${done}/${total} done • ${pct}%</div></div><div class="muted" style="font-size:12px">${tasks.length} items</div></div>`; el.addEventListener('click', ()=>{ state.currentSection = s; save(); renderSectionView(); renderSections(); }); container.appendChild(el); }); }
+function renderSections(){ const container = qs('#sectionList'); if(!container || !state.currentUser) return; container.innerHTML=''; const secs = Object.keys(state.users[state.currentUser].sections || {}); secs.forEach(s=>{ const tasks = (state.users[state.currentUser].sections[s].tasks||[]); const total = tasks.filter(t=>!t.archived).length; const done = tasks.filter(t=>t.completed).length; const pct = total?Math.round((done/total)*100):0; const el = document.createElement('div'); el.className='section-card card'; el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong style="color:var(--accent)">${s}</strong><div class="muted" style="font-size:12px">${done}/${total} done • ${pct}%</div></div><div class="muted" style="font-size:12px">${tasks.length} items</div></div>`; el.addEventListener('click', ()=>{ state.currentSection = s; save(); renderSectionView(); renderSections(); }); container.appendChild(el); }); }
 
 function renderHomeTiles(){ qsa('.tile').forEach(t=> t.addEventListener('click', ()=>{ state.currentSection = t.dataset.section; save(); renderSectionView(); renderSections(); })); }
 
 function getTasks(){ try{ return state.users[state.currentUser].sections[state.currentSection].tasks || []; }catch(e){ return []; } }
+
 function renderTaskList(filter=''){ const list = qs('#taskList'); if(!list) return; list.innerHTML=''; const tasks = getTasks().filter(t=>!t.archived && (!filter || t.title.toLowerCase().includes(filter.toLowerCase()))).sort((a,b)=>(a.due||0)-(b.due||0)); if(!tasks.length){ list.innerHTML = '<div class="muted">No tasks. Click + New Task to add one.</div>'; return; } tasks.forEach(t=>{ const el=document.createElement('div'); el.className='task'; const left = document.createElement('div'); left.className='left'; const cb = document.createElement('div'); cb.className = 'checkbox' + (t.completed? ' checked':'' ); cb.innerHTML = t.completed? '✔': ''; cb.addEventListener('click', ()=> toggleComplete(t)); const status = document.createElement('select'); status.innerHTML = '<option value="not">Not</option><option value="partial">Partial</option><option value="done">Done</option>'; status.value = t.status || 'not'; status.addEventListener('change', e=> handleStatusChange(t, e.target.value)); const info = document.createElement('div'); info.style.minWidth='0'; info.innerHTML = `<div class="task-title">${escapeHtml(t.title)}</div><div class="task-meta">${t.due? 'Due: '+new Date(t.due).toLocaleString() : 'No due date'} ${t.notes? ' • '+escapeHtml(t.notes):''}</div><div class="muted" style="font-size:12px">Reward: ${escapeHtml(t.reward||'—')} • Points: ${t.points||0}</div>`; left.appendChild(cb); left.appendChild(status); left.appendChild(info); const actions = document.createElement('div'); actions.className='task-actions'; const edit = document.createElement('button'); edit.className='small-btn'; edit.textContent='Edit'; edit.addEventListener('click', ()=> openModal(t.id)); const del = document.createElement('button'); del.className='small-btn'; del.textContent='Delete'; del.addEventListener('click', ()=>{ if(confirm('Delete this task?')){ t.archived=true; save(); renderTaskList(qs('#searchInput')?.value||''); updateProgress(); renderHistoryList(); renderSections(); renderLeaderboard(); } }); const remind = document.createElement('button'); remind.className='small-btn'; remind.textContent='Remind'; remind.addEventListener('click', ()=>{ if(!t.due){ alert('Set due date first'); return; } openReminderMail(t); }); actions.appendChild(edit); actions.appendChild(del); actions.appendChild(remind); el.appendChild(left); el.appendChild(actions); list.appendChild(el); }); }
 
 function toggleComplete(t){ if(!t.completed){ t.completed=true; t.completedAt=Date.now(); t.status='done'; const pts = Number(t.points)||0; state.users[state.currentUser].points = (state.users[state.currentUser].points||0) + pts; showEncouragement(pts,t); } else { t.completed=false; t.completedAt=null; if(t.status==='done'){ state.users[state.currentUser].points = Math.max(0, (state.users[state.currentUser].points||0) - (Number(t.points)||0)); } t.status='not'; } save(); renderTaskList(qs('#searchInput')?.value||''); updateProgress(); renderAccount(); renderSections(); renderLeaderboard(); }
@@ -305,7 +337,7 @@ function updateNextTask(){ const tasks = getTasks().filter(t=>!t.completed && !t
 const encouragements = ["Nice! Keep going — little wins add up.","Great job! Earn more points by completing another task.","You're on a roll — don't stop now!","Fantastic — consistent progress builds momentum.","Way to go! Reward yourself (you earned it)."];
 function showEncouragement(pts, task, partial=false){ const msg = (partial? "Nice progress!" : "Well done!") + ` +${pts} points for "${task.title}".`; const rotate = encouragements[Math.floor(Math.random()*encouragements.length)]; if(qs('#encourageMsg')) qs('#encourageMsg').textContent = msg + ' ' + rotate; setTimeout(()=>{ if(qs('#encourageMsg')) qs('#encourageMsg').textContent = ''; },6500); }
 
-/* Modal control + saving */
+/* Modal control + save */
 const modal = qs('#modal');
 function openModal(taskId){ state.editingTaskId = taskId || null; if(modal && modal.parentElement !== document.body) document.body.appendChild(modal); if(taskId){ const t = getTasks().find(x=>x.id===taskId); if(t){ qs('#modalTitle').textContent='Edit Task'; qs('#taskTitle').value = t.title; qs('#taskNotes').value = t.notes || ''; qs('#taskReward').value = t.reward || ''; qs('#taskPoints').value = t.points || ''; qs('#taskDue').value = t.due? toDatetimeLocal(new Date(t.due)) : ''; qs('#taskEmailRem').checked = !!t.emailReminder; qs('#reminderBefore').value = t.reminderBefore || '86400000'; } } else { qs('#modalTitle').textContent='New Task'; qs('#taskTitle').value=''; qs('#taskNotes').value=''; qs('#taskReward').value=''; qs('#taskPoints').value=''; qs('#taskDue').value=''; qs('#taskEmailRem').checked=false; qs('#reminderBefore').value='86400000'; } modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); }
 function closeModal(){ if(modal) modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); state.editingTaskId = null; }
@@ -325,65 +357,65 @@ function saveTaskFromModal(){
   }
 }
 
-/* Reminders (simple mailto opener) */
-function rebuildReminderQueue(){ state.reminderQueue = state.reminderQueue||[]; const newQ = []; Object.keys(state.users).forEach(u=>{ Object.keys(state.users[u].sections||{}).forEach(sec=>{ (state.users[u].sections[sec].tasks||[]).forEach(t=>{ if(t.emailReminder && t.due){ const trig = t.due - (t.reminderBefore||86400000); const exists = state.reminderQueue.some(r=> r.user===u && r.section===sec && r.taskId===t.id); if(!exists) newQ.push({ user:u, section:sec, taskId:t.id, triggerTime:trig, triggered:false }); } }); }); }); state.reminderQueue = state.reminderQueue.concat(newQ); save(); }
+/* Reminder system (mailto) */
+function rebuildReminderQueue(){ state.reminderQueue = state.reminderQueue||[]; const newQ = []; Object.keys(state.users).forEach(u=>{ Object.keys(state.users[u].sections||{}).forEach(sec=>{ (state.users[u].sections[sec].tasks||[]).forEach(t=>{ if(t.emailReminder && t.due){ const trig = t.due - (t.reminderBefore||86400000); const exists = state.reminderQueue.some(r => r.user===u && r.section===sec && r.taskId===t.id); if(!exists) newQ.push({ user:u, section:sec, taskId:t.id, triggerTime:trig, triggered:false }); } }); }); }); state.reminderQueue = state.reminderQueue.concat(newQ); save(); }
 function checkReminders(){ const now = Date.now(); (state.reminderQueue||[]).forEach(r=>{ if(r.triggered) return; if(r.triggerTime <= now){ r.triggered = true; save(); if(r.user === state.currentUser){ const t = state.users[r.user].sections[r.section].tasks.find(x=>x.id===r.taskId); if(t) openReminderMail(t); } } }); }
 function openReminderMail(task){ const subject = encodeURIComponent(`Reminder: "${task.title}" is due soon`); const body = encodeURIComponent(`Reminder: "${task.title}" is due on ${task.due?new Date(task.due).toLocaleString():'soon'}.\n\nNotes: ${task.notes||'-'}\nReward: ${task.reward||'-'}`); const email = state.users[state.currentUser].email || ''; if(email) window.location.href = `mailto:${encodeURIComponent(email)}?subject=${subject}&body=${body}`; else window.location.href = `mailto:?subject=${subject}&body=${body}`; }
 
-/* leaderboard */
+/* Leaderboard */
 function renderLeaderboard(){ const c = qs('#leaderboard'); if(!c) return; c.innerHTML=''; const users = Object.keys(state.users).map(u=>({u,points:state.users[u].points||0})).sort((a,b)=>b.points-a.points).slice(0,8); users.forEach((it,idx)=>{ const el = document.createElement('div'); el.style.padding='6px 0'; el.innerHTML = `<div style="display:flex;justify-content:space-between"><div style="min-width:0"><strong style="color:var(--accent)">${idx+1}. ${escapeHtml(it.u)}</strong><div class="muted" style="font-size:12px">Points: ${it.points}</div></div><div class="muted" style="font-size:12px">${it.u===state.currentUser?'You':''}</div></div>`; c.appendChild(el); }); }
 
-/* misc helpers */
+/* Helpers */
 function toDatetimeLocal(date){ const off = date.getTimezoneOffset(); const d = new Date(date.getTime() - off*60*1000); return d.toISOString().slice(0,16); }
 function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, (c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
 
-/* ticker */
+/* Ticker */
 let ticker = null;
 function startTicker(){ if(ticker) clearInterval(ticker); ticker = setInterval(()=>{ updateNextTask(); checkReminders(); },1000); }
 
-/* Initial wiring once DOM ready */
+/* Initial wiring */
 document.addEventListener('DOMContentLoaded', ()=>{
-  // Ensure modal sits directly under body (avoid stacking context trap)
+  // ensure modal appended to body to avoid stacking traps
   if(modal && modal.parentElement !== document.body) document.body.appendChild(modal);
 
   // Wire auth controls
   qs('#openCreate').addEventListener('click', ()=>{
     const u = prompt('Create username (no spaces):'); if(!u) return;
-    const email = prompt('Email (optional):'); const pw = prompt('Password:'); if(!pw){ alert('Password required'); return; }
-    createAccount(u,pw,email);
+    const em = prompt('Email (optional):'); const pw = prompt('Password:'); if(!pw){ alert('Password required'); return; }
+    createAccount(u,pw,em);
   });
   qs('#quickSignIn').addEventListener('click', ()=> signIn(qs('#quickUser').value.trim(), qs('#quickPass').value));
+  qs('#quickPass').addEventListener('keydown', e=>{ if(e.key==='Enter') signIn(qs('#quickUser').value.trim(), qs('#quickPass').value); });
 
   // theme selector
   const themeSel = qs('#themeSelect');
   if(themeSel){ themeSel.addEventListener('change', (e)=>{ const t = e.target.value; applyTheme(t); try{ if(state.currentUser && state.users[state.currentUser]){ state.users[state.currentUser].theme = t; save(); } else localStorage.setItem('lp_global_theme_v1', t); }catch(err){} }); }
 
-  // signout
+  // sign out
   qs('#signOutBtn').addEventListener('click', ()=>{ load(); state.currentUser=null; save(); location.reload(); });
 
-  // add task direct binding
+  // add task (direct)
   qs('#addTaskBtn').addEventListener('click', ()=> openModal());
 
-  // Save button direct binding (fixes "not responding")
+  // Save button direct binding
   const saveBtn = qs('#saveTaskBtn');
-  if(saveBtn) saveBtn.addEventListener('click', (ev)=> { try{ saveTaskFromModal(); } catch(err){ console.error('save click failed', err); alert('Save error — check console'); } });
+  if(saveBtn) saveBtn.addEventListener('click', ()=> { try{ saveTaskFromModal(); } catch(err){ console.error('save click failed', err); alert('Save error — check console'); } });
 
   // cancel modal
   qs('#cancelModal').addEventListener('click', ()=> closeModal());
 
-  // search box
+  // search
   qs('#searchInput').addEventListener('input', e=> renderTaskList(e.target.value));
 
   // manual
-  qs('#manualBtn').addEventListener('click', ()=> alert('User manual:\\n• Create account via Create\\n• Add tasks with + New Task\\n• Enable email reminders (opens your mail client)\\n• Data stored locally in browser'));
+  qs('#manualBtn').addEventListener('click', ()=> alert('User manual:\n• Create account via Create\n• Add tasks with + New Task\n• Enable email reminders (opens your mail client)\n• Data stored locally in your browser'));
 
-  // initial accounts & load
+  // initial load
   load();
   populateAccountList();
   Object.keys(state.users||{}).forEach(u=> Object.keys(defaultSections).forEach(s=> { if(!state.users[u].sections[s]) state.users[u].sections[s] = { tasks: [] }; }));
   if(state.currentUser && state.users[state.currentUser]) showApp(); else showAuth();
 
-  // build reminder queue and start ticker
   rebuildReminderQueue();
   startTicker();
 });
@@ -391,10 +423,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
 /* Helper render wrapper */
 function renderSectionView(){ if(!state.currentUser) return; qs('#currentSectionTitle').textContent = state.currentSection; renderTaskList(qs('#searchInput')?.value||''); renderHistoryList(); updateProgress(); updateNextTask(); renderAccount(); renderSections(); rebuildReminderQueue(); renderLeaderboard(); }
 
-// Expose state for debugging
+/* expose for debugging */
 window.lp_state = state;
 window.lp_save = save;
 </script>
 </body>
 </html>
+
 
