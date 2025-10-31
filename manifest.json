@@ -6,7 +6,18 @@
   "background_color": "#ffffff",
   "theme_color": "#0078d7",
   "description": "A simple life productivity and to-do list app by John Darknet.",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
   "scope": "./",
   "orientation": "portrait"
 }
-
