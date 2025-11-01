@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Life Productivity — Themes fixed</title>
-  <link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json">
 <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
@@ -88,6 +88,26 @@
   .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);font-size:13px}
   .section-card{padding:10px;border-radius:10px;margin-bottom:8px;cursor:pointer;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
   input[type=text],input[type=password],input[type=email],input[type=datetime-local],select{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+
+  /* naming motion animation for app title */
+  .title.naming {
+    animation: naming 900ms cubic-bezier(.2,.9,.2,1);
+    transform-origin: center;
+  }
+  @keyframes naming {
+    0%   { transform: translateY(0) scale(1); opacity: 0.6; filter: blur(1px); }
+    30%  { transform: translateY(-6px) scale(1.08) rotate(-2deg); opacity: 1; filter: blur(0); }
+    65%  { transform: translateY(2px)  scale(0.98) rotate(1deg); }
+    100% { transform: translateY(0)  scale(1) rotate(0); opacity: 1; filter: blur(0); }
+  }
+  .logo.naming {
+    animation: logoPop 700ms cubic-bezier(.2,.9,.2,1);
+  }
+  @keyframes logoPop {
+    0% { transform: scale(0.8) rotate(-8deg); opacity: 0.7; }
+    50% { transform: scale(1.18) rotate(6deg); }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
 </style>
 </head>
 <body data-theme="dark">
@@ -274,19 +294,55 @@
   </div>
 
 <script>
-/* Theme / password fix version */
+/* Theme / naming motion version with more preset tasks */
 const STORAGE_KEY = 'LP_THEMED_V1';
 const GLOBAL_THEME_KEY = 'lp_global_theme_v1';
 const qs = (s, el=document) => el.querySelector(s);
 const qsa = (s, el=document) => Array.from((el||document).querySelectorAll(s));
 const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
+// More predetermined tasks per section — added variety and quantity
 const defaultSections = {
-  'Personal': [{title:'Morning stretch', notes:'10 minutes', points:5, reward:'Energy'}],
-  'Home': [{title:'Do dishes', notes:'Wash and dry dishes', points:3, reward:'Clean sink'}, {title:'Sweep floor', notes:'Quick sweep', points:3, reward:'Tidy kitchen'}, {title:'Fold clothes', notes:'Fold laundry', points:4, reward:'Neat closet'}],
-  'School': [{title:'Review notes', notes:'Revise lessons', points:6, reward:'Better grades'}],
-  'Work': [{title:'Email updates', notes:'Send daily updates', points:5, reward:'Stay aligned'}],
-  'Community': [{title:'Volunteer check', notes:'Plan volunteering', points:6, reward:'Give back'}]
+  'Personal': [
+    {title:'Morning stretch', notes:'10 minutes', points:5, reward:'Energy'},
+    {title:'Hydrate', notes:'Drink 500ml water', points:2, reward:'Refreshed'},
+    {title:'Meditation', notes:'5-10 minutes focus', points:4, reward:'Calm mind'},
+    {title:'Read 15 min', notes:'Any book', points:6, reward:'Learning'},
+    {title:'Plan day', notes:'List top 3 tasks', points:3, reward:'Clarity'},
+    {title:'Evening journal', notes:'3 wins of the day', points:4, reward:'Reflection'}
+  ],
+  'Home': [
+    {title:'Do dishes', notes:'Wash and dry dishes', points:3, reward:'Clean sink'},
+    {title:'Sweep floor', notes:'Quick sweep', points:3, reward:'Tidy kitchen'},
+    {title:'Fold clothes', notes:'Fold laundry', points:4, reward:'Neat closet'},
+    {title:'Take out trash', notes:'Collect and throw out', points:2, reward:'Fresh home'},
+    {title:'Water plants', notes:'Check soil & water', points:2, reward:'Happy plants'},
+    {title:'Wipe surfaces', notes:'Kitchen counters', points:3, reward:'Sanitized space'}
+  ],
+  'School': [
+    {title:'Review notes', notes:'Revise lessons', points:6, reward:'Better grades'},
+    {title:'Complete assignment', notes:'Finish pending task', points:8, reward:'Submit on time'},
+    {title:'Practice problem', notes:'One exercise', points:4, reward:'Understanding'},
+    {title:'Read textbook', notes:'30 minutes reading', points:5, reward:'Knowledge'},
+    {title:'Organize files', notes:'Sort study materials', points:3, reward:'Neat desk'},
+    {title:'Group study prep', notes:'Plan for session', points:4, reward:'Collaboration'}
+  ],
+  'Work': [
+    {title:'Email updates', notes:'Send daily updates', points:5, reward:'Stay aligned'},
+    {title:'Task breakdown', notes:'Split big task into steps', points:6, reward:'Manageable work'},
+    {title:'Code review', notes:'Review PRs', points:7, reward:'Quality'},
+    {title:'Meeting prep', notes:'Notes and goals', points:4, reward:'Focused meeting'},
+    {title:'Client follow-up', notes:'Send follow-up email', points:5, reward:'Progress'},
+    {title:'Update doc', notes:'Document design decisions', points:4, reward:'Reference'}
+  ],
+  'Community': [
+    {title:'Volunteer check', notes:'Plan volunteering', points:6, reward:'Give back'},
+    {title:'Organize event', notes:'Create event checklist', points:7, reward:'Impact'},
+    {title:'Community post', notes:'Share helpful resource', points:3, reward:'Engage'},
+    {title:'Assist neighbor', notes:'Offer help', points:4, reward:'Goodwill'},
+    {title:'Donate items', notes:'Sort donations', points:5, reward:'Help others'},
+    {title:'Sign petition', notes:'Support local cause', points:2, reward:'Civic action'}
+  ]
 };
 
 let state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] };
@@ -451,12 +507,41 @@ function saveTaskFromModal(){
 }
 
 /* reminders / mailto */
-function rebuildReminderQueue(){ state.reminderQueue = state.reminderQueue||[]; const newQ = []; Object.keys(state.users).forEach(u=>{ Object.keys(state.users[u].sections||{}).forEach(sec=>{ (state.users[u].sections[sec].tasks||[]).forEach(t=>{ if(t.emailReminder && t.due){ const trig = t.due - (t.reminderBefore||86400000); const exists = state.reminderQueue.some(r => r.user===u && r.section===sec && r.taskId===t.id); if(!exists) newQ.push({ user:u, section:sec, taskId:t.id, triggerTime:trig, triggered:false }); } }); }); }); state.reminderQueue = state.reminderQueue.concat(newQ); save(); }
+function rebuildReminderQueue(){
+  const existingTriggered = (state.reminderQueue || []).filter(r => r.triggered)
+    .reduce((map, r) => {
+      map[`${r.user}||${r.section}||${r.taskId}`] = r;
+      return map;
+    }, {});
+  const newQ = [];
+  Object.keys(state.users).forEach(u=>{
+    Object.keys(state.users[u].sections||{}).forEach(sec=>{
+      (state.users[u].sections[sec].tasks||[]).forEach(t=>{
+        if(t.emailReminder && t.due){
+          const trig = t.due - (t.reminderBefore||86400000);
+          const key = `${u}||${sec}||${t.id}`;
+          const preserved = existingTriggered[key];
+          if(preserved){
+            // keep the triggered flag and triggerTime in case it already fired
+            newQ.push({ user:u, section:sec, taskId:t.id, triggerTime:preserved.triggerTime || trig, triggered: true });
+          } else {
+            newQ.push({ user:u, section:sec, taskId:t.id, triggerTime: trig, triggered: false });
+          }
+        }
+      });
+    });
+  });
+  state.reminderQueue = newQ;
+  save();
+}
 function checkReminders(){ const now = Date.now(); (state.reminderQueue||[]).forEach(r=>{ if(r.triggered) return; if(r.triggerTime <= now){ r.triggered = true; save(); if(r.user === state.currentUser){ const t = state.users[r.user].sections[r.section].tasks.find(x=>x.id===r.taskId); if(t) openReminderMail(t); } } }); }
-function openReminderMail(task){ const subject = encodeURIComponent(`Reminder: "${task.title}" is due soon`); const body = encodeURIComponent(`Reminder: "${task.title}" is due on ${task.due?new Date(task.due).toLocaleString():'soon'}.\n\nNotes: ${task.notes||'-'}\nReward: ${task.reward||'-'}`); const email = state.users[state.currentUser].email || ''; if(email) window.location.href = `mailto:${encodeURIComponent(email)}?subject=${subject}&body=${body}`; else window.location.href = `mailto:?subject=${subject}&body=${body}`; }
+function openReminderMail(task){ const subject = encodeURIComponent(`Reminder: "${task.title}" is due soon`); const body = encodeURIComponent(`Reminder: "${task.title}" is due on ${task.due?new Date(task.due).toLocaleString():'soon'}.
+
+Notes: ${task.notes||'-'}
+Reward: ${task.reward||'-'}`); const email = state.users[state.currentUser].email || ''; if(email) window.location.href = `mailto:${encodeURIComponent(email)}?subject=${subject}&body=${body}`; else window.location.href = `mailto:?subject=${subject}&body=${body}`; }
 
 /* leaderboard */
-function renderLeaderboard(){ const c = qs('#leaderboard'); if(!c) return; c.innerHTML=''; const users = Object.keys(state.users).map(u=>({u,points:state.users[u].points||0})).sort((a,b)=>b.points-a.points).slice(0,8); users.forEach((it,idx)=>{ const el = document.createElement('div'); el.style.padding='6px 0'; el.innerHTML = `<div style="display:flex;justify-content:space-between"><div style="min-width:0"><strong style="color:var(--accent)">${idx+1}. ${escapeHtml(it.u)}</strong><div class="muted" style="font-size:12px">Points: ${it.points}</div></div><div class="muted" style="font-size:12px">${it.u===state.currentUser?'You':''}</div></div>`; c.appendChild(el); }); }
+function renderLeaderboard(){ const c = qs('#leaderboard'); if(!c) return; c.innerHTML=''; const users = Object.keys(state.users).map(u=>({u,points:state.users[u].points||0})).sort((a,b)=>b.points-a.points).slice(0,8); users.forEach((it,idx)=>{ const el = document.createElement('div'); el.style.padding='6px 0'; el.innerHTML = `<div style=\"display:flex;justify-content:space-between\"><div style=\"min-width:0\"><strong style=\"color:var(--accent)\">${idx+1}. ${escapeHtml(it.u)}</strong><div class=\"muted\" style=\"font-size:12px\">Points: ${it.points}</div></div><div class=\"muted\" style=\"font-size:12px\">${it.u===state.currentUser?'You':''}</div></div>`; c.appendChild(el); }); }
 
 /* helpers */
 function toDatetimeLocal(date){ const off = date.getTimezoneOffset(); const d = new Date(date.getTime() - off*60*1000); return d.toISOString().slice(0,16); }
@@ -465,6 +550,38 @@ function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, (
 /* ticker */
 let ticker = null;
 function startTicker(){ if(ticker) clearInterval(ticker); ticker = setInterval(()=>{ updateNextTask(); checkReminders(); },1000); }
+
+/* Naming motion: replace old user manual with rename flow */
+const APP_NAME_KEY = 'lp_app_name_v1';
+
+function loadAppName(){
+  const n = localStorage.getItem(APP_NAME_KEY);
+  if(n && qs('.title')) qs('.title').textContent = n;
+  if(n && qs('.logo')){
+    const letters = n.split(' ').map(s => s[0]||'').join('').slice(0,2).toUpperCase();
+    qs('.logo').textContent = letters || 'LP';
+  }
+}
+
+function saveAppName(name){
+  try{ localStorage.setItem(APP_NAME_KEY, name); }catch(e){ console.warn('Could not save app name', e); }
+}
+
+function animateNaming(){
+  const t = qs('.title');
+  const l = qs('.logo');
+  if(!t) return;
+  t.classList.remove('naming');
+  void t.offsetWidth; // force reflow to restart animation
+  t.classList.add('naming');
+  if(l){
+    l.classList.remove('naming');
+    void l.offsetWidth;
+    l.classList.add('naming');
+    setTimeout(()=> l.classList.remove('naming'), 900);
+  }
+  setTimeout(()=> t.classList.remove('naming'), 900);
+}
 
 /* initial wiring and DOM ready */
 document.addEventListener('DOMContentLoaded', ()=>{
@@ -519,7 +636,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   // sign out
-  qs('#signOutBtn').addEventListener('click', ()=>{ load(); state.currentUser=null; save(); location.reload(); });
+  qs('#signOutBtn').addEventListener('click', ()=>{ load(); state.currentUser=null; save(); showAuth(); const global = localStorage.getItem(GLOBAL_THEME_KEY) || 'dark'; applyTheme(global); });
 
   // add task
   qs('#addTaskBtn').addEventListener('click', ()=> openModal());
@@ -534,11 +651,52 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // search
   qs('#searchInput').addEventListener('input', e=> renderTaskList(e.target.value));
 
-  // manual
-  qs('#manualBtn').addEventListener('click', ()=> alert('User manual:\n• Create account via Create\n• Add tasks with + New Task\n• Enable email reminders (opens your mail client)\n• Data stored locally in your browser'));
+  // manual button has been repurposed to Rename App (naming motion)
+  const manualBtnEl = qs('#manualBtn');
+  if(manualBtnEl){
+    manualBtnEl.textContent = 'Rename App';
+    manualBtnEl.setAttribute('aria-label', 'Rename app title');
+    manualBtnEl.addEventListener('click', ()=>{
+      const current = qs('.title')?.textContent || 'Life Productivity';
+      const newName = prompt('Enter new app name:', current);
+      if(newName && newName.trim()){
+        const name = newName.trim();
+        if(qs('.title')) qs('.title').textContent = name;
+        if(qs('.logo')){
+          const letters = name.split(' ').map(s => s[0]||'').join('').slice(0,2).toUpperCase();
+          qs('.logo').textContent = letters || 'LP';
+        }
+        saveAppName(name);
+        animateNaming();
+      }
+    });
+  }
+
+  // PWA install prompt handling (optional UI)
+  let deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    if(!qs('#installBtn')){
+      const btn = document.createElement('button');
+      btn.id = 'installBtn';
+      btn.className = 'btn';
+      btn.textContent = 'Install App';
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        deferredInstallPrompt.prompt();
+        const choice = await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        btn.remove();
+      });
+      const headerRow = qs('header .row');
+      if(headerRow) headerRow.insertBefore(btn, headerRow.firstChild);
+    }
+  });
 
   // load state
   load();
+  loadAppName();
   populateAccountList();
   Object.keys(state.users||{}).forEach(u=> Object.keys(defaultSections).forEach(s=> { if(!state.users[u].sections[s]) state.users[u].sections[s] = { tasks: [] }; }));
 
@@ -566,7 +724,3 @@ window.lp_save = save;
 </script>
 </body>
 </html>
-
-
-
-
