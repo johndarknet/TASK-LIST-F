@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Life Productivity — Themes fixed</title>
-  <link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json">
 <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
@@ -165,7 +165,7 @@
               <div style="display:flex;gap:8px;align-items:center">
                 <input id="searchInput" placeholder="Search tasks..." style="min-width:160px">
                 <button id="addTaskBtn" class="btn">+ New Task</button>
-                <!-- User manual removed -->
+                <!-- manual button removed -->
                 <button id="signOutBtn" class="small-btn">Sign out</button>
               </div>
             </div>
@@ -456,7 +456,7 @@ function createAccount(u,p,email){
 function signIn(u,p){
   load();
   if(!u || !state.users[u] || state.users[u].password !== p){ alert('Invalid user or password (create account if new)'); return; }
-  // ensure any missing defaults are added for this user
+  // ensure any missing defaults are added for this user and persisted
   ensureUser(u, state.users[u].email);
   state.currentUser = u;
   if(!state.users[u].theme){
@@ -605,6 +605,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   Object.keys(state.users||{}).forEach(u=>{
     ensureUser(u, state.users[u].email || '');
   });
+
+  // IMPORTANT: persist seeded defaults to localStorage so future loads see them
+  save();
 
   // If user already signed in in saved state, make sure their theme is applied (fallback to global)
   if(state.currentUser && state.users[state.currentUser]) {
