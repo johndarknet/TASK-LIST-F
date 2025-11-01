@@ -165,7 +165,7 @@
               <div style="display:flex;gap:8px;align-items:center">
                 <input id="searchInput" placeholder="Search tasks..." style="min-width:160px">
                 <button id="addTaskBtn" class="btn">+ New Task</button>
-                <!-- User manual removed from UI -->
+                <button id="manualBtn" class="small-btn">User manual</button>
                 <button id="signOutBtn" class="small-btn">Sign out</button>
               </div>
             </div>
@@ -281,32 +281,12 @@ const qs = (s, el=document) => el.querySelector(s);
 const qsa = (s, el=document) => Array.from((el||document).querySelectorAll(s));
 const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
-/* === DEFAULT SECTIONS & PREDETERMINED TASKS ===
-   These tasks will be created for every new user (and used to fill missing sections for existing users).
-*/
 const defaultSections = {
-  'Personal': [
-    {title:'Morning stretch', notes:'10 minutes', points:5, reward:'Energy'},
-    {title:'Set daily goal', notes:'Write one goal for today', points:2, reward:'Clarity'}
-  ],
-  'Home': [
-    {title:'Do dishes', notes:'Wash and dry dishes', points:3, reward:'Clean sink'},
-    {title:'Sweep floor', notes:'Quick sweep', points:3, reward:'Tidy kitchen'},
-    {title:'Fold clothes', notes:'Fold laundry', points:4, reward:'Neat closet'},
-    {title:'Tidy one area', notes:'5 minutes', points:2, reward:'Neat space'}
-  ],
-  'School': [
-    {title:'Review notes', notes:'Revise lessons', points:6, reward:'Better grades'},
-    {title:'Plan study session', notes:'30 minutes', points:4, reward:'Progress'}
-  ],
-  'Work': [
-    {title:'Email updates', notes:'Send daily updates', points:5, reward:'Stay aligned'},
-    {title:'Plan tomorrow tasks', notes:'5 minutes', points:3, reward:'Stay organized'}
-  ],
-  'Community': [
-    {title:'Volunteer check', notes:'Plan volunteering', points:6, reward:'Give back'},
-    {title:'Connect with neighbor', notes:'Say hello or help', points:3, reward:'Goodwill'}
-  ]
+  'Personal': [{title:'Morning stretch', notes:'10 minutes', points:5, reward:'Energy'}],
+  'Home': [{title:'Do dishes', notes:'Wash and dry dishes', points:3, reward:'Clean sink'}, {title:'Sweep floor', notes:'Quick sweep', points:3, reward:'Tidy kitchen'}, {title:'Fold clothes', notes:'Fold laundry', points:4, reward:'Neat closet'}],
+  'School': [{title:'Review notes', notes:'Revise lessons', points:6, reward:'Better grades'}],
+  'Work': [{title:'Email updates', notes:'Send daily updates', points:5, reward:'Stay aligned'}],
+  'Community': [{title:'Volunteer check', notes:'Plan volunteering', points:6, reward:'Give back'}]
 };
 
 let state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] };
@@ -315,62 +295,18 @@ let state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:n
 function load(){ try{ const raw = localStorage.getItem(STORAGE_KEY); if(!raw){ state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] }; return; } state = JSON.parse(raw); if(!state.users) state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] }; }catch(e){ console.warn('load error', e); state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] }; } }
 function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.warn('save failed', e); } }
 
-/* ensureUser: create user object and populate default sections/tasks if missing.
-   This is robust: if user exists but lacks sections or tasks, it fills them without overwriting existing tasks.
-*/
 function ensureUser(u, email){
   if(!u) return;
   if(!state.users[u]){
-    // New user: create with full defaults
+    // init user's theme from global if present so login theme = app theme
     const globalTheme = localStorage.getItem(GLOBAL_THEME_KEY) || 'dark';
     state.users[u] = { password:'', email: email||'', points:0, theme: globalTheme, createdAt: Date.now(), sections:{} };
     Object.keys(defaultSections).forEach(sec=>{
       state.users[u].sections[sec] = { tasks: [] };
-      defaultSections[sec].forEach(t=> {
-        state.users[u].sections[sec].tasks.push({
-          id: uid(),
-          title: t.title,
-          notes: t.notes || '',
-          points: t.points || 0,
-          reward: t.reward || '',
-          due: null,
-          createdAt: Date.now(),
-          completed: false,
-          completedAt: null,
-          archived: false,
-          status: 'not',
-          emailReminder: false,
-          reminderBefore: 86400000
-        });
-      });
+      defaultSections[sec].forEach(t=> state.users[u].sections[sec].tasks.push({ id:uid(), title:t.title, notes:t.notes||'', points:t.points||0, reward:t.reward||'', due:null, createdAt:Date.now(), completed:false, completedAt:null, archived:false, status:'not', emailReminder:false, reminderBefore:86400000 }));
     });
   } else {
-    // Existing user: ensure each section exists and is populated if empty
-    Object.keys(defaultSections).forEach(sec=>{
-      if(!state.users[u].sections[sec]) {
-        state.users[u].sections[sec] = { tasks: [] };
-      }
-      // If section exists but has no tasks, populate defaults (this fixes the "missing predetermined tasks" issue)
-      if((state.users[u].sections[sec].tasks || []).length === 0){
-        defaultSections[sec].forEach(t=> {
-          state.users[u].sections[sec].tasks.push({
-            id: uid(),
-            title: t.title,
-            notes: t.notes || '',
-            points: t.points || 0,
-            reward: t.reward || '',
-            due: null,
-            createdAt: Date.now(),
-            completed: false,
-            completedAt: null,
-            archived: false,
-            status: 'not',
-            emailReminder: false,
-            reminderBefore: 86400000
-          });
-        });
-      }
-    });
+    Object.keys(defaultSections).forEach(sec=>{ if(!state.users[u].sections[sec]) state.users[u].sections[sec] = { tasks: [] }; });
   }
 }
 
@@ -444,7 +380,6 @@ function populateAccountList(){ const c = qs('#accountList'); if(!c) return; c.i
 function createAccount(u,p,email){
   if(!u||!p){ alert('Enter username and password'); return; }
   load();
-  // ensure the user object gets the defaults
   ensureUser(u,email);
   state.users[u].password = p;
   state.users[u].email = email || '';
@@ -459,8 +394,6 @@ function createAccount(u,p,email){
 function signIn(u,p){
   load();
   if(!u || !state.users[u] || state.users[u].password !== p){ alert('Invalid user or password (create account if new)'); return; }
-  // ensure any missing default tasks/sections for this user are populated
-  ensureUser(u, state.users[u].email);
   state.currentUser = u;
   // if user has no theme, give them the global current theme so the app matches the login theme
   if(!state.users[u].theme){
@@ -601,15 +534,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // search
   qs('#searchInput').addEventListener('input', e=> renderTaskList(e.target.value));
 
+  // manual
+  qs('#manualBtn').addEventListener('click', ()=> alert('User manual:\n• Create account via Create\n• Add tasks with + New Task\n• Enable email reminders (opens your mail client)\n• Data stored locally in your browser'));
+
   // load state
   load();
-
-  // Ensure every existing user has sections and default tasks (fills missing defaults)
-  Object.keys(state.users||{}).forEach(u=>{
-    ensureUser(u, state.users[u].email);
-  });
-
   populateAccountList();
+  Object.keys(state.users||{}).forEach(u=> Object.keys(defaultSections).forEach(s=> { if(!state.users[u].sections[s]) state.users[u].sections[s] = { tasks: [] }; }));
 
   // If user already signed in in saved state, make sure their theme is applied (fallback to global)
   if(state.currentUser && state.users[state.currentUser]) {
@@ -635,3 +566,5 @@ window.lp_save = save;
 </script>
 </body>
 </html>
+
+please add  a pre determined task to each seaction 
