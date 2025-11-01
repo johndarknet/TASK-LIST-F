@@ -282,11 +282,11 @@ const qsa = (s, el=document) => Array.from((el||document).querySelectorAll(s));
 const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
 const defaultSections = {
-  'Personal': [{title:'Morning stretch', notes:'10 minutes', points:5, reward:'Energy'}],
-  'Home': [{title:'Do dishes', notes:'Wash and dry dishes', points:3, reward:'Clean sink'}, {title:'Sweep floor', notes:'Quick sweep', points:3, reward:'Tidy kitchen'}, {title:'Fold clothes', notes:'Fold laundry', points:4, reward:'Neat closet'}],
-  'School': [{title:'Review notes', notes:'Revise lessons', points:6, reward:'Better grades'}],
-  'Work': [{title:'Email updates', notes:'Send daily updates', points:5, reward:'Stay aligned'}],
-  'Community': [{title:'Volunteer check', notes:'Plan volunteering', points:6, reward:'Give back'}]
+  'Personal': [{title:'Morning stretch', notes:'10 minutes', points:5, reward:'Energy'}, {title:'Set daily goal', notes:'Write one goal for today', points:2, reward:'Clarity'}],
+  'Home': [{title:'Do dishes', notes:'Wash and dry dishes', points:3, reward:'Clean sink'}, {title:'Sweep floor', notes:'Quick sweep', points:3, reward:'Tidy kitchen'}, {title:'Fold clothes', notes:'Fold laundry', points:4, reward:'Neat closet'}, {title:'Tidy one area', notes:'5 minutes', points:2, reward:'Neat space'}],
+  'School': [{title:'Review notes', notes:'Revise lessons', points:6, reward:'Better grades'}, {title:'Plan study session', notes:'30 minutes', points:4, reward:'Progress'}],
+  'Work': [{title:'Email updates', notes:'Send daily updates', points:5, reward:'Stay aligned'}, {title:'Plan tomorrow tasks', notes:'5 minutes', points:3, reward:'Stay organized'}],
+  'Community': [{title:'Volunteer check', notes:'Plan volunteering', points:6, reward:'Give back'}, {title:'Connect with neighbor', notes:'Say hello or help', points:3, reward:'Goodwill'}]
 };
 
 let state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] };
@@ -460,7 +460,7 @@ function renderLeaderboard(){ const c = qs('#leaderboard'); if(!c) return; c.inn
 
 /* helpers */
 function toDatetimeLocal(date){ const off = date.getTimezoneOffset(); const d = new Date(date.getTime() - off*60*1000); return d.toISOString().slice(0,16); }
-function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, (c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>\"']/g, (c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
 
 /* ticker */
 let ticker = null;
