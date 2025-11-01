@@ -165,7 +165,7 @@
               <div style="display:flex;gap:8px;align-items:center">
                 <input id="searchInput" placeholder="Search tasks..." style="min-width:160px">
                 <button id="addTaskBtn" class="btn">+ New Task</button>
-                <button id="manualBtn" class="small-btn">User manual</button>
+                <!-- User manual removed -->
                 <button id="signOutBtn" class="small-btn">Sign out</button>
               </div>
             </div>
@@ -281,12 +281,34 @@ const qs = (s, el=document) => el.querySelector(s);
 const qsa = (s, el=document) => Array.from((el||document).querySelectorAll(s));
 const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
+/* --- expanded preset tasks per section --- */
 const defaultSections = {
-  'Personal': [{title:'Morning stretch', notes:'10 minutes', points:5, reward:'Energy'}],
-  'Home': [{title:'Do dishes', notes:'Wash and dry dishes', points:3, reward:'Clean sink'}, {title:'Sweep floor', notes:'Quick sweep', points:3, reward:'Tidy kitchen'}, {title:'Fold clothes', notes:'Fold laundry', points:4, reward:'Neat closet'}],
-  'School': [{title:'Review notes', notes:'Revise lessons', points:6, reward:'Better grades'}],
-  'Work': [{title:'Email updates', notes:'Send daily updates', points:5, reward:'Stay aligned'}],
-  'Community': [{title:'Volunteer check', notes:'Plan volunteering', points:6, reward:'Give back'}]
+  'Personal': [
+    {title:'Morning stretch', notes:'10 minutes', points:5, reward:'Energy'},
+    {title:'Set daily goal', notes:'Write one goal for today', points:2, reward:'Clarity'},
+    {title:'Drink water', notes:'At least one glass', points:1, reward:'Hydration'}
+  ],
+  'Home': [
+    {title:'Do dishes', notes:'Wash and dry dishes', points:3, reward:'Clean sink'},
+    {title:'Sweep floor', notes:'Quick sweep', points:3, reward:'Tidy kitchen'},
+    {title:'Fold clothes', notes:'Fold laundry', points:4, reward:'Neat closet'},
+    {title:'Tidy one area', notes:'5 minutes', points:2, reward:'Neat space'}
+  ],
+  'School': [
+    {title:'Review notes', notes:'Revise lessons', points:6, reward:'Better grades'},
+    {title:'Plan study session', notes:'30 minutes', points:4, reward:'Progress'},
+    {title:'Submit assignment', notes:'Check submission', points:5, reward:'Done'}
+  ],
+  'Work': [
+    {title:'Email updates', notes:'Send daily updates', points:5, reward:'Stay aligned'},
+    {title:'Plan tomorrow tasks', notes:'5 minutes', points:3, reward:'Stay organized'},
+    {title:'Quick code review', notes:'15 minutes', points:4, reward:'Better quality'}
+  ],
+  'Community': [
+    {title:'Volunteer check', notes:'Plan volunteering', points:6, reward:'Give back'},
+    {title:'Connect with neighbor', notes:'Say hello or help', points:3, reward:'Goodwill'},
+    {title:'Community post', notes:'Share event', points:2, reward:'Awareness'}
+  ]
 };
 
 let state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] };
@@ -295,18 +317,61 @@ let state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:n
 function load(){ try{ const raw = localStorage.getItem(STORAGE_KEY); if(!raw){ state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] }; return; } state = JSON.parse(raw); if(!state.users) state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] }; }catch(e){ console.warn('load error', e); state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] }; } }
 function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.warn('save failed', e); } }
 
+/* Ensure user object exists and has default sections/tasks.
+   - For new users create full defaults.
+   - For existing users, fill missing sections and populate sections that are empty.
+*/
 function ensureUser(u, email){
   if(!u) return;
   if(!state.users[u]){
-    // init user's theme from global if present so login theme = app theme
     const globalTheme = localStorage.getItem(GLOBAL_THEME_KEY) || 'dark';
     state.users[u] = { password:'', email: email||'', points:0, theme: globalTheme, createdAt: Date.now(), sections:{} };
     Object.keys(defaultSections).forEach(sec=>{
       state.users[u].sections[sec] = { tasks: [] };
-      defaultSections[sec].forEach(t=> state.users[u].sections[sec].tasks.push({ id:uid(), title:t.title, notes:t.notes||'', points:t.points||0, reward:t.reward||'', due:null, createdAt:Date.now(), completed:false, completedAt:null, archived:false, status:'not', emailReminder:false, reminderBefore:86400000 }));
+      defaultSections[sec].forEach(t=> {
+        state.users[u].sections[sec].tasks.push({
+          id: uid(),
+          title: t.title,
+          notes: t.notes || '',
+          points: t.points || 0,
+          reward: t.reward || '',
+          due: null,
+          createdAt: Date.now(),
+          completed: false,
+          completedAt: null,
+          archived: false,
+          status: 'not',
+          emailReminder: false,
+          reminderBefore: 86400000
+        });
+      });
     });
   } else {
-    Object.keys(defaultSections).forEach(sec=>{ if(!state.users[u].sections[sec]) state.users[u].sections[sec] = { tasks: [] }; });
+    Object.keys(defaultSections).forEach(sec=>{
+      if(!state.users[u].sections[sec]) {
+        state.users[u].sections[sec] = { tasks: [] };
+      }
+      // If the section exists but has no tasks, populate defaults.
+      if((state.users[u].sections[sec].tasks || []).length === 0){
+        defaultSections[sec].forEach(t=> {
+          state.users[u].sections[sec].tasks.push({
+            id: uid(),
+            title: t.title,
+            notes: t.notes || '',
+            points: t.points || 0,
+            reward: t.reward || '',
+            due: null,
+            createdAt: Date.now(),
+            completed: false,
+            completedAt: null,
+            archived: false,
+            status: 'not',
+            emailReminder: false,
+            reminderBefore: 86400000
+          });
+        });
+      }
+    });
   }
 }
 
@@ -358,7 +423,6 @@ function saveGlobalTheme(t){ try{ localStorage.setItem(GLOBAL_THEME_KEY, t); }ca
 /* UI show/hide */
 function showAuth(){ qs('#authArea').style.display='block'; qs('#appRoot').style.display='none'; populateAccountList(); }
 function showApp(){
-  // ensure the currently-signed-in user has a theme; if not, assign the global theme
   if(state.currentUser && state.users[state.currentUser]){
     if(!state.users[state.currentUser].theme){
       state.users[state.currentUser].theme = localStorage.getItem(GLOBAL_THEME_KEY) || 'dark';
@@ -366,10 +430,8 @@ function showApp(){
     }
   }
   qs('#authArea').style.display='none'; qs('#appRoot').style.display='block';
-  // apply user's theme if present, otherwise global
   const active = state.currentUser && state.users[state.currentUser] ? state.users[state.currentUser].theme : localStorage.getItem(GLOBAL_THEME_KEY) || 'dark';
   applyTheme(active);
-  // ensure selector reflects active theme
   const sel = qs('#themeSelect'); if(sel) sel.value = active;
   renderAccount(); renderSections(); renderHomeTiles(); renderSectionView(); startTicker(); renderLeaderboard();
 }
@@ -380,10 +442,10 @@ function populateAccountList(){ const c = qs('#accountList'); if(!c) return; c.i
 function createAccount(u,p,email){
   if(!u||!p){ alert('Enter username and password'); return; }
   load();
+  // create and populate defaults for this user
   ensureUser(u,email);
   state.users[u].password = p;
   state.users[u].email = email || '';
-  // ensure user's theme is set to current global/selector so UI matches
   state.users[u].theme = state.users[u].theme || localStorage.getItem(GLOBAL_THEME_KEY) || (qs('#themeSelect')?qs('#themeSelect').value:'dark');
   state.currentUser = u;
   state.currentSection = 'Home';
@@ -394,8 +456,9 @@ function createAccount(u,p,email){
 function signIn(u,p){
   load();
   if(!u || !state.users[u] || state.users[u].password !== p){ alert('Invalid user or password (create account if new)'); return; }
+  // ensure any missing defaults are added for this user
+  ensureUser(u, state.users[u].email);
   state.currentUser = u;
-  // if user has no theme, give them the global current theme so the app matches the login theme
   if(!state.users[u].theme){
     state.users[u].theme = localStorage.getItem(GLOBAL_THEME_KEY) || (qs('#themeSelect')?qs('#themeSelect').value:'dark');
     save();
@@ -534,13 +597,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // search
   qs('#searchInput').addEventListener('input', e=> renderTaskList(e.target.value));
 
-  // manual
-  qs('#manualBtn').addEventListener('click', ()=> alert('User manual:\n• Create account via Create\n• Add tasks with + New Task\n• Enable email reminders (opens your mail client)\n• Data stored locally in your browser'));
-
   // load state
   load();
   populateAccountList();
-  Object.keys(state.users||{}).forEach(u=> Object.keys(defaultSections).forEach(s=> { if(!state.users[u].sections[s]) state.users[u].sections[s] = { tasks: [] }; }));
+
+  // Make sure every stored user has default sections/tasks if missing
+  Object.keys(state.users||{}).forEach(u=>{
+    ensureUser(u, state.users[u].email || '');
+  });
 
   // If user already signed in in saved state, make sure their theme is applied (fallback to global)
   if(state.currentUser && state.users[state.currentUser]) {
@@ -566,5 +630,3 @@ window.lp_save = save;
 </script>
 </body>
 </html>
-
-
