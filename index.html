@@ -3,17 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Life Productivity — Themes fixed</title>
-<link rel="manifest" href="manifest.json">
-<script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function () {
-      navigator.serviceWorker.register("service-worker.js");
-    });
-  }
-</script>
-
+<title>Life Productivity — Single-file</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<base href="./">
 <style>
   html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Helvetica;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
   body{display:flex;align-items:flex-start;justify-content:center;padding:18px;box-sizing:border-box;overflow-x:hidden}
@@ -294,7 +286,10 @@
   </div>
 
 <script>
-/* Theme / naming motion version with more preset tasks and fixes */
+/* Debug bootstrap: logs early so we can see the file loaded */
+console.log('LP index.html (single-file) boot ->', location.href);
+
+/* Theme / naming motion version with more preset tasks and fixes (original logic preserved) */
 const STORAGE_KEY = 'LP_THEMED_V1';
 const GLOBAL_THEME_KEY = 'lp_global_theme_v1';
 const qs = (s, el=document) => el.querySelector(s);
@@ -349,7 +344,6 @@ let state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:n
 let particleContainer = null;
 
 /* storage */
-/* Rewritten load: copy parsed data into existing state object (do NOT reassign 'state') */
 function load(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -358,7 +352,6 @@ function load(){
       return;
     }
     const parsed = JSON.parse(raw);
-    // copy parsed fields into the existing state object rather than reassigning
     state.users = parsed.users || {};
     state.currentUser = typeof parsed.currentUser !== 'undefined' ? parsed.currentUser : null;
     state.currentSection = typeof parsed.currentSection !== 'undefined' ? parsed.currentSection : 'Home';
@@ -701,28 +694,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
   })();
 
-  // PWA install prompt handling (optional UI)
-  let deferredInstallPrompt = null;
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredInstallPrompt = e;
-    if(!qs('#installBtn')){
-      const btn = document.createElement('button');
-      btn.id = 'installBtn';
-      btn.className = 'btn';
-      btn.textContent = 'Install App';
-      btn.addEventListener('click', async () => {
-        btn.disabled = true;
-        deferredInstallPrompt.prompt();
-        const choice = await deferredInstallPrompt.userChoice;
-        deferredInstallPrompt = null;
-        btn.remove();
-      });
-      const headerRow = qs('header .row');
-      if(headerRow) headerRow.insertBefore(btn, headerRow.firstChild);
-    }
-  });
-
   // load state & app name
   load();
   loadAppName();
@@ -742,6 +713,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   rebuildReminderQueue();
   startTicker();
+
 });
 
 /* render wrapper */
