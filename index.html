@@ -317,62 +317,54 @@ let state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:n
 function load(){ try{ const raw = localStorage.getItem(STORAGE_KEY); if(!raw){ state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] }; return; } state = JSON.parse(raw); if(!state.users) state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] }; }catch(e){ console.warn('load error', e); state = { users:{}, currentUser:null, currentSection:'Home', editingTaskId:null, reminderQueue:[] }; } }
 function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.warn('save failed', e); } }
 
-/* Ensure user object exists and has default sections/tasks.
-   - For new users create full defaults.
-   - For existing users, fill missing sections and populate sections that are empty.
+/* Ensure user exists and merge defaults (add only missing default tasks by title).
+   This avoids creating duplicates and works for new and existing users.
 */
 function ensureUser(u, email){
   if(!u) return;
   if(!state.users[u]){
     const globalTheme = localStorage.getItem(GLOBAL_THEME_KEY) || 'dark';
     state.users[u] = { password:'', email: email||'', points:0, theme: globalTheme, createdAt: Date.now(), sections:{} };
+    // create sections and add all defaults
     Object.keys(defaultSections).forEach(sec=>{
       state.users[u].sections[sec] = { tasks: [] };
       defaultSections[sec].forEach(t=> {
-        state.users[u].sections[sec].tasks.push({
-          id: uid(),
-          title: t.title,
-          notes: t.notes || '',
-          points: t.points || 0,
-          reward: t.reward || '',
-          due: null,
-          createdAt: Date.now(),
-          completed: false,
-          completedAt: null,
-          archived: false,
-          status: 'not',
-          emailReminder: false,
-          reminderBefore: 86400000
-        });
+        state.users[u].sections[sec].tasks.push(makeTaskFromPreset(t));
       });
     });
   } else {
+    // Ensure each section exists and merge missing preset tasks (by title)
     Object.keys(defaultSections).forEach(sec=>{
-      if(!state.users[u].sections[sec]) {
-        state.users[u].sections[sec] = { tasks: [] };
-      }
-      // If the section exists but has no tasks, populate defaults.
-      if((state.users[u].sections[sec].tasks || []).length === 0){
-        defaultSections[sec].forEach(t=> {
-          state.users[u].sections[sec].tasks.push({
-            id: uid(),
-            title: t.title,
-            notes: t.notes || '',
-            points: t.points || 0,
-            reward: t.reward || '',
-            due: null,
-            createdAt: Date.now(),
-            completed: false,
-            completedAt: null,
-            archived: false,
-            status: 'not',
-            emailReminder: false,
-            reminderBefore: 86400000
-          });
-        });
-      }
+      if(!state.users[u].sections[sec]) state.users[u].sections[sec] = { tasks: [] };
+      const tasks = state.users[u].sections[sec].tasks || [];
+      defaultSections[sec].forEach(preset=>{
+        const exists = tasks.some(t => (t.title || '').trim().toLowerCase() === (preset.title||'').trim().toLowerCase());
+        if(!exists){
+          tasks.push(makeTaskFromPreset(preset));
+        }
+      });
+      state.users[u].sections[sec].tasks = tasks;
     });
   }
+}
+
+/* helper to create a task object from preset */
+function makeTaskFromPreset(p){
+  return {
+    id: uid(),
+    title: p.title || '',
+    notes: p.notes || '',
+    points: p.points || 0,
+    reward: p.reward || '',
+    due: null,
+    createdAt: Date.now(),
+    completed: false,
+    completedAt: null,
+    archived: false,
+    status: 'not',
+    emailReminder: false,
+    reminderBefore: 86400000
+  };
 }
 
 /* theme particles */
@@ -456,7 +448,7 @@ function createAccount(u,p,email){
 function signIn(u,p){
   load();
   if(!u || !state.users[u] || state.users[u].password !== p){ alert('Invalid user or password (create account if new)'); return; }
-  // ensure any missing defaults are added for this user and persisted
+  // ensure any missing defaults are merged for this user and persisted
   ensureUser(u, state.users[u].email);
   state.currentUser = u;
   if(!state.users[u].theme){
@@ -601,12 +593,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
   load();
   populateAccountList();
 
-  // Make sure every stored user has default sections/tasks if missing
+  // Merge defaults into every stored user (adds missing preset tasks only)
   Object.keys(state.users||{}).forEach(u=>{
     ensureUser(u, state.users[u].email || '');
   });
 
-  // IMPORTANT: persist seeded defaults to localStorage so future loads see them
+  // Persist any merged defaults
   save();
 
   // If user already signed in in saved state, make sure their theme is applied (fallback to global)
