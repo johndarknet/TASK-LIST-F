@@ -470,7 +470,7 @@ function renderHomeTiles(){ qsa('.tile').forEach(t=> t.addEventListener('click',
 
 function getTasks(){ try{ return state.users[state.currentUser].sections[state.currentSection].tasks || []; }catch(e){ return []; } }
 
-function renderTaskList(filter=''){ const list = qs('#taskList'); if(!list) return; list.innerHTML=''; const tasks = getTasks().filter(t=>!t.archived && (!filter || t.title.toLowerCase().includes(filter.toLowerCase()))).sort((a,b)=>(a.due||0)-(b.due||0)); if(!tasks.length){ list.innerHTML = '<div class="muted">No tasks. Click + New Task to add one.</div>'; return; } tasks.forEach(t=>{ const el=document.createElement('div'); el.className='task'; const left = document.createElement('div'); left.className='left'; const cb = document.createElement('div'); cb.className = 'checkbox' + (t.completed? ' checked':'' ); cb.innerHTML = t.completed? '✔': ''; cb.addEventListener('click', ()=> toggleComplete(t)); const status = document.createElement('select'); status.innerHTML = '<option value="not">Not</option><option value="partial">Partial</option><option value="done">Done</option>'; status.value = t.status || 'not'; status.addEventListener('change', e=> handleStatusChange(t, e.target.value)); const info = document.createElement('div'); info.style.minWidth='0'; info.innerHTML = `<div class="task-title">${escapeHtml(t.title)}</div><div class="task-meta">${t.due? 'Due: '+new Date(t.due).toLocaleString() : 'No due date'} ${t.notes? ' • '+escapeHtml(t.notes):''}</div><div class="muted" style="font-size:12px">Reward: ${escapeHtml(t.reward||'—')} • Points: ${t.points||0}</div>`; left.appendChild(cb); left.appendChild(status); left.appendChild(info); const actions = document.createElement('div'); actions.className='task-actions'; const edit = document.createElement('button'); edit.className='small-btn'; edit.textContent='Edit'; edit.addEventListener('click', ()=> openModal(t.id)); const del = document.createElement('button'); del.className='small-btn'; del.textContent='Delete'; del.addEventListener('click', ()=>{ if(confirm('Delete this task?')){ t.archived=true; save(); renderTaskList(qs('#searchInput')?.value||''); updateProgress(); renderHistoryList(); renderSections(); renderLeaderboard(); } }); const remind = document.createElement('button'); remind.className='small-btn'; remind.textContent='Remind'; remind.addEventListener('click', ()=>{ if(!t.due){ alert('Set due date first'); return; } openReminderMail(t); }); actions.appendChild(edit); actions.appendChild(del); actions.appendChild(remind); el.appendChild(left); el.appendChild(actions); list.appendChild(el); }); }
+function renderTaskList(filter=''){ const list = qs('#taskList'); if(!list) return; list.innerHTML=''; const tasks = getTasks().filter(t=>!t.archived && (!filter || t.title.toLowerCase().includes(filter.toLowerCase()))).sort((a,b)=>(a.due||0)-(b.due||0)); if(!tasks.length){ list.innerHTML = '<div class="muted">No tasks. Click + New Task to add one.</div>'; return; } tasks.forEach(t=>{ const el=document.createElement('div'); el.className='task'; const left = document.createElement('div'); left.className='left'; const cb = document.createElement('div'); cb.className = 'checkbox' + (t.completed? ' checked':'' ); cb.innerHTML = t.completed? '✔': ''; cb.addEventListener('click', ()=> toggleComplete(t)); const status = document.createElement('select'); status.innerHTML = '<option value="not">Not</option><option value="partial">Partial</option><option value="done">Done</option>'; status.value = t.status || 'not'; status.addEventListener('change', e=> handleStatusChange(t, e.target.value)); const info = document.createElement('div'); info.style.minWidth='0'; info.innerHTML = `<div class="task-title">${escapeHtml(t.title)}</div><div class="task-meta">${t.due? 'Due: '+new Date(t.due).toLocaleString() : 'No due date'} ${t.notes? ' • '+escapeHtml(t.notes):''}</div><div class="muted" style="font-size:12px">Reward: ${escapeHtml(t.reward||'—')} • Points: ${t.points||0}</div>`; left.appendChild(cb); left.appendChild(status); left.appendChild(info); const actions = document.createElement('div'); actions.className='task-actions'; const edit = document.createElement('button'); edit.className='small-btn'; edit.textContent='Edit'; edit.addEventListener('click', ()=> openModal(t.id)); const del = document.createElement('button'); del.className='small-btn'; del.textContent='Delete'; del.addEventListener('click', ()=>{ if(confirm('Delete this task?')){ t.archived=true; save(); renderTaskList(qs('#searchInput')?.value||''); updateProgress(); renderHistoryList(); renderSections(); renderLeaderboard(); } }); const remind = document.createElement('button'); remind.className='small-btn'; remind.textContent='Remind'; remind.addEventListener('click', ()=>{ if(!t.due){ alert('Set due date first'); return; } openReminderNotify(t); }); actions.appendChild(edit); actions.appendChild(del); actions.appendChild(remind); el.appendChild(left); el.appendChild(actions); list.appendChild(el); }); }
 
 function toggleComplete(t){ if(!t.completed){ t.completed=true; t.completedAt=Date.now(); t.status='done'; const pts = Number(t.points)||0; state.users[state.currentUser].points = (state.users[state.currentUser].points||0) + pts; showEncouragement(pts,t); } else { t.completed=false; t.completedAt=null; if(t.status==='done'){ state.users[state.currentUser].points = Math.max(0, (state.users[state.currentUser].points||0) - (Number(t.points)||0)); } t.status='not'; } save(); renderTaskList(qs('#searchInput')?.value||''); updateProgress(); renderAccount(); renderSections(); renderLeaderboard(); }
 
@@ -505,47 +505,80 @@ function saveTaskFromModal(){
   }
 }
 
-/* reminders / mailto */
+/* reminders queue (used for scheduled reminders) */
 function rebuildReminderQueue(){ state.reminderQueue = state.reminderQueue||[]; const newQ = []; Object.keys(state.users).forEach(u=>{ Object.keys(state.users[u].sections||{}).forEach(sec=>{ (state.users[u].sections[sec].tasks||[]).forEach(t=>{ if(t.emailReminder && t.due){ const trig = t.due - (t.reminderBefore||86400000); const exists = state.reminderQueue.some(r => r.user===u && r.section===sec && r.taskId===t.id); if(!exists) newQ.push({ user:u, section:sec, taskId:t.id, triggerTime:trig, triggered:false }); } }); }); }); state.reminderQueue = state.reminderQueue.concat(newQ); save(); }
-function checkReminders(){ const now = Date.now(); (state.reminderQueue||[]).forEach(r=>{ if(r.triggered) return; if(r.triggerTime <= now){ r.triggered = true; save(); if(r.user === state.currentUser){ const t = state.users[r.user].sections[r.section].tasks.find(x=>x.id===r.taskId); if(t) openReminderMail(t); } } }); }
+function checkReminders(){ const now = Date.now(); (state.reminderQueue||[]).forEach(r=>{ if(r.triggered) return; if(r.triggerTime <= now){ r.triggered = true; save(); if(r.user === state.currentUser){ const t = state.users[r.user].sections[r.section].tasks.find(x=>x.id===r.taskId); if(t) openReminderNotify(t); } } }); }
 
-/* REPLACEMENT: robust openReminderMail that tries mailto, opens Gmail compose, and copies link as fallback */
-function openReminderMail(task){
+/* New: show a desktop notification + short beep using Web Audio */
+function openReminderNotify(task){
+  // Play beep (short tone)
   try {
-    const subject = encodeURIComponent(`Reminder: "${task.title}" is due soon`);
-    const body = encodeURIComponent(`Reminder: "${task.title}" is due on ${task.due?new Date(task.due).toLocaleString():'soon'}.\n\nNotes: ${task.notes||'-'}\nReward: ${task.reward||'-'}`);
-    const email = (state && state.users && state.currentUser && state.users[state.currentUser] && state.users[state.currentUser].email) ? state.users[state.currentUser].email : '';
-    const mailto = email ? `mailto:${encodeURIComponent(email)}?subject=${subject}&body=${body}` : `mailto:?subject=${subject}&body=${body}`;
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = 880; // A6-ish
+    g.gain.value = 0.0001;
+    o.connect(g);
+    g.connect(ctx.destination);
+    const now = ctx.currentTime;
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(0.2, now + 0.01);
+    o.start(now);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+    o.stop(now + 0.55);
+    // close context after
+    setTimeout(()=>{ try{ ctx.close(); }catch(e){} }, 800);
+  } catch (e) {
+    // fallback to alert sound
+    console.warn('Audio API not available', e);
+  }
 
-    // Try to open default mail client via mailto (may be blocked by popup blockers)
-    try {
-      window.location.href = mailto;
-    } catch (e) {
-      // ignore; continue to fallback
-    }
+  const title = `Reminder: ${task.title}`;
+  const dueText = task.due ? `Due ${new Date(task.due).toLocaleString()}` : 'No due date set';
+  const body = `${dueText}\n${task.notes || ''}\nReward: ${task.reward || '—'}`;
 
-    // Open Gmail compose in a new tab as a helpful fallback for webmail users
-    try {
-      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&su=${subject}&body=${body}${email ? '&to=' + encodeURIComponent(email) : ''}`;
-      window.open(gmailUrl, '_blank');
-    } catch (e) {
-      // ignore if blocked
-    }
+  // Show in-page alert fallback (useful for file:// or denied permission)
+  function showFallback(){
+    alert(`${title}\n\n${body}`);
+  }
 
-    // Copy the mailto link to clipboard and notify the user
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(mailto).then(() => {
-        alert('Reminder helper: tried to open your mail client and opened Gmail compose in a new tab (if available). The mailto link was also copied to clipboard as a fallback — paste it into your mail app if needed.');
-      }).catch(() => {
-        alert('Reminder helper: tried to open your mail client and opened Gmail compose in a new tab (if available). If nothing opened, copy & paste this link into your mail app:\n\n' + mailto);
+  // Attempt Notifications API
+  if("Notification" in window){
+    if(Notification.permission === "granted"){
+      try {
+        const n = new Notification(title, { body, silent: true });
+        // optional: when clicked, focus window/tab
+        n.onclick = function(){ window.focus(); };
+      } catch (e) {
+        console.warn('Notification failed', e);
+        showFallback();
+      }
+    } else if(Notification.permission !== "denied"){
+      Notification.requestPermission().then(perm=>{
+        if(perm === "granted"){
+          try {
+            const n = new Notification(title, { body, silent: true });
+            n.onclick = function(){ window.focus(); };
+          } catch (e) {
+            console.warn('Notification fail after grant', e);
+            showFallback();
+          }
+        } else {
+          // permission denied or default -> fallback
+          showFallback();
+        }
+      }).catch(err=>{
+        console.warn('Notification permission request failed', err);
+        showFallback();
       });
     } else {
-      // Older browsers: show the link in an alert
-      alert('Reminder helper: tried to open your mail client and opened Gmail compose in a new tab (if available). If nothing opened, copy & paste this link into your mail app:\n\n' + mailto);
+      // denied
+      showFallback();
     }
-  } catch (e) {
-    console.error('openReminderMail error', e);
-    alert('Could not create reminder email — see console for details.');
+  } else {
+    // Notifications not supported
+    showFallback();
   }
 }
 
