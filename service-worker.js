@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tasklist-cache-v1';
+const CACHE_NAME = 'motion-cache-v1';
 const FILES_TO_CACHE = [
   '/',
   '/index.html',
