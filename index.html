@@ -508,7 +508,46 @@ function saveTaskFromModal(){
 /* reminders / mailto */
 function rebuildReminderQueue(){ state.reminderQueue = state.reminderQueue||[]; const newQ = []; Object.keys(state.users).forEach(u=>{ Object.keys(state.users[u].sections||{}).forEach(sec=>{ (state.users[u].sections[sec].tasks||[]).forEach(t=>{ if(t.emailReminder && t.due){ const trig = t.due - (t.reminderBefore||86400000); const exists = state.reminderQueue.some(r => r.user===u && r.section===sec && r.taskId===t.id); if(!exists) newQ.push({ user:u, section:sec, taskId:t.id, triggerTime:trig, triggered:false }); } }); }); }); state.reminderQueue = state.reminderQueue.concat(newQ); save(); }
 function checkReminders(){ const now = Date.now(); (state.reminderQueue||[]).forEach(r=>{ if(r.triggered) return; if(r.triggerTime <= now){ r.triggered = true; save(); if(r.user === state.currentUser){ const t = state.users[r.user].sections[r.section].tasks.find(x=>x.id===r.taskId); if(t) openReminderMail(t); } } }); }
-function openReminderMail(task){ const subject = encodeURIComponent(`Reminder: "${task.title}" is due soon`); const body = encodeURIComponent(`Reminder: "${task.title}" is due on ${task.due?new Date(task.due).toLocaleString():'soon'}.\n\nNotes: ${task.notes||'-'}\nReward: ${task.reward||'-'}`); const email = state.users[state.currentUser].email || ''; if(email) window.location.href = `mailto:${encodeURIComponent(email)}?subject=${subject}&body=${body}`; else window.location.href = `mailto:?subject=${subject}&body=${body}`; }
+
+/* REPLACEMENT: robust openReminderMail that tries mailto, opens Gmail compose, and copies link as fallback */
+function openReminderMail(task){
+  try {
+    const subject = encodeURIComponent(`Reminder: "${task.title}" is due soon`);
+    const body = encodeURIComponent(`Reminder: "${task.title}" is due on ${task.due?new Date(task.due).toLocaleString():'soon'}.\n\nNotes: ${task.notes||'-'}\nReward: ${task.reward||'-'}`);
+    const email = (state && state.users && state.currentUser && state.users[state.currentUser] && state.users[state.currentUser].email) ? state.users[state.currentUser].email : '';
+    const mailto = email ? `mailto:${encodeURIComponent(email)}?subject=${subject}&body=${body}` : `mailto:?subject=${subject}&body=${body}`;
+
+    // Try to open default mail client via mailto (may be blocked by popup blockers)
+    try {
+      window.location.href = mailto;
+    } catch (e) {
+      // ignore; continue to fallback
+    }
+
+    // Open Gmail compose in a new tab as a helpful fallback for webmail users
+    try {
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&su=${subject}&body=${body}${email ? '&to=' + encodeURIComponent(email) : ''}`;
+      window.open(gmailUrl, '_blank');
+    } catch (e) {
+      // ignore if blocked
+    }
+
+    // Copy the mailto link to clipboard and notify the user
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(mailto).then(() => {
+        alert('Reminder helper: tried to open your mail client and opened Gmail compose in a new tab (if available). The mailto link was also copied to clipboard as a fallback — paste it into your mail app if needed.');
+      }).catch(() => {
+        alert('Reminder helper: tried to open your mail client and opened Gmail compose in a new tab (if available). If nothing opened, copy & paste this link into your mail app:\n\n' + mailto);
+      });
+    } else {
+      // Older browsers: show the link in an alert
+      alert('Reminder helper: tried to open your mail client and opened Gmail compose in a new tab (if available). If nothing opened, copy & paste this link into your mail app:\n\n' + mailto);
+    }
+  } catch (e) {
+    console.error('openReminderMail error', e);
+    alert('Could not create reminder email — see console for details.');
+  }
+}
 
 /* leaderboard */
 function renderLeaderboard(){ const c = qs('#leaderboard'); if(!c) return; c.innerHTML=''; const users = Object.keys(state.users).map(u=>({u,points:state.users[u].points||0})).sort((a,b)=>b.points-a.points).slice(0,8); users.forEach((it,idx)=>{ const el = document.createElement('div'); el.style.padding='6px 0'; el.innerHTML = `<div style="display:flex;justify-content:space-between"><div style="min-width:0"><strong style="color:var(--accent)">${idx+1}. ${escapeHtml(it.u)}</strong><div class="muted" style="font-size:12px">Points: ${it.points}</div></div><div class="muted" style="font-size:12px">${it.u===state.currentUser?'You':''}</div></div>`; c.appendChild(el); }); }
